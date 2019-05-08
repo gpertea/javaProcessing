@@ -36,6 +36,23 @@ public class PrApp extends PApplet {
    background(50);//clear the canvas
    drawObjects(); //draw all our objects
  }
+
+ public void mouseReleased() {
+	 if (mouseButton==LEFT) {
+		 
+		 if (square.mouseOver && square.mouseLpressed) {
+				 square.mouseLup();
+		 }
+		 square.mouseLpressed=false;
+	 }
+	 if (mouseButton==RIGHT) {
+		 if (square.mouseOver && square.mouseRpressed) {
+			 square.mouseRup();
+		 }
+		 square.mouseRpressed=false;
+	 }
+ }
+
  
  void onResize() {
    square.setPos(width/2-objSize/2, height/2-objSize/2);	 
@@ -55,4 +72,5 @@ public class PrApp extends PApplet {
   // declared in the class and created by createObjects()
   square.draw();
  }
+ 
 }
