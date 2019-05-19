@@ -7,8 +7,8 @@ public class PrObj {
  float osize;
  int ocol; //object color
  boolean mouseOver;
- boolean mouseLpressed;
- boolean mouseRpressed;
+ boolean mousePressedL;
+ boolean mousePressedR;
  // other custom fields here, as needed
 
  PrObj(PrApp parent, float x, float y, float size, int col) { //constructor!
@@ -17,8 +17,8 @@ public class PrObj {
    oy=y;
    osize=size;
    mouseOver=false;
-   mouseLpressed=false;
-   mouseRpressed=false;
+   mousePressedL=false;
+   mousePressedR=false;
    //.. any other object fields initialization can be here
    ocol=col;
  }
@@ -32,12 +32,30 @@ public class PrObj {
 	ocol=color; 
  }
  
- void mouseLup() {
-     if (mouseOver) shiftHue();	 
+ void mouseUpL() {
+     if (mouseOver && mousePressedL) mouseClickL();
+     mousePressedL=false;
  }
  
- void mouseRup() {
-	 
+ 
+  void mouseUpR() {
+	 if (mouseOver && mousePressedR) mouseClickR();
+	 mousePressedR=false;
+ }
+
+ void mouseDownL() {
+     if (mouseOver) mousePressedL=true;	 
+ }
+ 
+ void mouseDownR() {
+     if (mouseOver) mousePressedR=true;	  
+ }
+
+ void mouseClickL() {
+	 shiftHue();
+ }
+ 
+ void mouseClickR() {
  }
  
  void shiftHue() {
@@ -57,22 +75,10 @@ public class PrObj {
    // We will make use of pr. graphical methods here!
    int col=ocol;
    pr.noStroke();
-   if (contains(pr.mouseX, pr.mouseY)) {
-	   float br=pr.brightness(col);
-	   mouseOver=true;
-	   if (pr.mousePressed) {
-		   if (pr.mouseButton==PrApp.LEFT && !mouseLpressed) {
-			   mouseLpressed=true;
-		   }
-		   if (pr.mouseButton==PrApp.RIGHT && !mouseRpressed) {
-			   mouseRpressed=true;
-		   }
-	   }
-	   col=pr.color(pr.hue(col), pr.saturation(col), br+10);
-   } else {
-	   mouseOver=false;
-   }
-   if (mouseLpressed) pr.stroke(80);
+   mouseOver=contains(pr.mouseX, pr.mouseY); //test for every frame!
+   if (mouseOver)
+	   col=pr.color(pr.hue(col), pr.saturation(col), pr.brightness(col)+10);
+   if (mousePressedL) pr.stroke(80);
    pr.fill(col); // set the fill color to gray-80
    pr.rect(ox, oy, osize, osize);  // draw a square
  }
