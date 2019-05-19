@@ -94,10 +94,8 @@ public class PrApp extends PApplet {
 		numRows=(int)((height - (baseDist - minObjSpacing) - topDist ) / (objSize + minObjSpacing));
 		numCols=(int)((width - (sideDist - minObjSpacing) - sideDist) / (objSize + minObjSpacing));
 		if (sideDist<minObjSpacing) numCols--;
-        //float objSpacingY = (numRows>1) ? (float)(height - baseDist - topDist - numRows*objSize)/(numRows-1) : 0;
-		//objSpacingX is what matters
+		//recompute horizontal spacing to make a row fit&fill the width-sideDist*2 space 
 		objSpacing = (numCols>1) ? (float)(width - sideDist*2 - numCols*objSize)/(numCols-1) : 0;
-		//if (objSpacingX >= 1 && objSpacingY>objSpacingX) objSpacingY=objSpacingX;
 		squares=new PrObj[numRows][numCols]; //allocate an array of rows (a row is an array of numcols squares)
 		float hue=0; //starting hue
 		for (int i=0;i<numRows;i++) {
