@@ -7,9 +7,9 @@ public class PrObj {
  float osize; //size of the object
  int ocol; //object color
  boolean mouseOver;
- /*
  boolean mousePressedL;
  boolean mousePressedR;
+ /*
  boolean dead; //if true, it's no longer drawn or interacting
  int deathFrame;
  static int DeathFrames=20; //total frame count for death animation
@@ -21,11 +21,11 @@ public class PrObj {
    osize=size;
    mouseOver=false;
    ocol=col;
-   /*
-   dead=false;
    mousePressedL=false;
    mousePressedR=false;
    //.. any other object fields initialization can be here
+   /*
+   dead=false;
    deathFrame=0;
    */
  }
@@ -38,14 +38,14 @@ public class PrObj {
  void setColor(int color) {
 	ocol=color; 
  }
+ */
  
  void mouseUpL() {
      if (mousePressedL) mouseClickL();
      mousePressedL=false;
  }
  
- 
-  void mouseUpR() {
+ void mouseUpR() {
 	 if (mousePressedR) mouseClickR();
 	 mousePressedR=false;
  }
@@ -63,14 +63,15 @@ public class PrObj {
  }
  
  void mouseClickR() {
-	 
+	ocol=pr.color(0,80,80);
+   //kill();	 
  }
- 
+ /*
  void kill() {
 	 dead=true;
  }
- 
  */
+ 
  void shiftHue() {
 	float hue=pr.hue(ocol);
 	hue+=4;
@@ -103,11 +104,11 @@ public class PrObj {
    }
    */
    int col=ocol;
-   pr.noStroke();
    mouseOver=contains(pr.mouseX, pr.mouseY); //test for every frame!
    if (mouseOver)
 	   col=pr.color(pr.hue(col), pr.saturation(col), pr.brightness(col)+10);
-   // if (mousePressedL) pr.stroke(80);
+   pr.noStroke();
+   if (mousePressedL) pr.stroke(80);
    pr.fill(col);
    pr.rect(ox, oy, osize, osize);  // draw a square
  }

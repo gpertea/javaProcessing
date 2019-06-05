@@ -69,17 +69,20 @@ public class PrApp extends PApplet {
 		for(PrObj[] row: squares) 
 			for(PrObj square: row) {
 				if (square.dead) continue;
+		*/
 				if (square.mouseOver) {
+					/*
+				
 					if (mousePressObj!=null) {
 						if (mouseButton==LEFT) mousePressObj.mousePressedL=false;
 						if (mouseButton==RIGHT) mousePressObj.mousePressedR=false;
 					}
 					mousePressObj=square;
+					*/
 					if (mouseButton==LEFT) square.mouseDownL();
 					if (mouseButton==RIGHT) square.mouseDownR();
 				}
-			}
-		*/
+	//	}
 	}
 
 	// mouseReleased() is an event-triggered method which is called once 
@@ -105,6 +108,7 @@ public class PrApp extends PApplet {
 				if (square.mouseOver) {
 					if (mouseButton==LEFT) {
 						square.mouseUpL();
+						
 						if (mousePressObj!=null) {
 							System.out.printf("comparing hue %d to %d\n", Math.round(hue(mousePressObj.ocol)), Math.round(hue(square.ocol)));
 							if (Math.round(hue(mousePressObj.ocol))==Math.round(hue(square.ocol))) {
@@ -112,13 +116,22 @@ public class PrApp extends PApplet {
 							  mousePressObj.kill();
 							}
 						}
+						
 					}
 					if (mouseButton==RIGHT) {
 						square.mouseUpR();
 					}
 				}
 			}
-			*/
+		*/
+		if (mouseButton==LEFT) {
+			if (square.mouseOver) square.mouseUpL();
+			square.mousePressedL=false;
+		}
+		if (mouseButton==RIGHT) {
+			if (square.mouseOver) square.mouseUpR();
+			else square.mousePressedR=false;
+		}
 	}
 
 	// keyPressed() is an event-triggered method which is called once 
@@ -133,6 +146,7 @@ public class PrApp extends PApplet {
 	*/
 	//---------- our new custom methods here ----
 	void onResize() {
+		System.out.println("Resize called!");
 		createObjects(); 
 	}
 
