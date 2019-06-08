@@ -9,11 +9,9 @@ public class PrObj {
  boolean mouseOver;
  boolean mousePressedL;
  boolean mousePressedR;
- /*
  boolean dead; //if true, it's no longer drawn or interacting
  int deathFrame;
  static int DeathFrames=20; //total frame count for death animation
- */
  PrObj(PrApp parent, float x, float y, float size, int col) { //constructor!
    pr=parent; // so we can use all PApplet methods/fields
    ox=x;
@@ -24,10 +22,8 @@ public class PrObj {
    mousePressedL=false;
    mousePressedR=false;
    //.. any other object fields initialization can be here
-   /*
    dead=false;
    deathFrame=0;
-   */
  }
  /*
  void setPos(float x, float y) {
@@ -63,14 +59,19 @@ public class PrObj {
  }
  
  void mouseClickR() {
-	ocol=pr.color(0,80,80);
-   //kill();	 
+   //ocol=pr.color(0,80,80);
+   killOrResurect();
  }
- /*
- void kill() {
-	 dead=true;
+ 
+ void killOrResurect() {
+	 if (dead) {
+		 dead=false;
+		 deathFrame=0;
+	 } else {
+	   dead=true;
+	 }
+	 
  }
- */
  
  void shiftHue() {
 	float hue=pr.hue(ocol);
@@ -82,27 +83,25 @@ public class PrObj {
  boolean contains(float x, float y) {
 	 return (x>=ox && x<=ox+osize && y>=oy && y<=oy+osize);
  }
- /*
- void drawDying() {
+ 
+ void killAnim() {
     deathFrame++;
 	float shrinkDelta=(float)(deathFrame * osize)/DeathFrames;
 	shrinkDelta/=2;
 	pr.fill(ocol); 
 	pr.rect(ox+shrinkDelta, oy+shrinkDelta, osize-shrinkDelta*2, osize-shrinkDelta*2);
  }
- */
+ 
  void draw() {
    //  Our custom method which draws this object 
    //  on the parent application canvas,  every frame
    // We will make use of pr. graphical methods here!
 	 
    //special case: object is dead/dying:
-   /*
    if (dead) {
-		if (deathFrame<DeathFrames) drawDying();
+		if (deathFrame<DeathFrames) killAnim();
 		return;
    }
-   */
    int col=ocol;
    mouseOver=contains(pr.mouseX, pr.mouseY); //test for every frame!
    if (mouseOver)
