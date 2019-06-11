@@ -81,16 +81,16 @@ public class PrApp extends PApplet {
 	public void mouseReleased() {
 		if (!actionStarted) return;
 		if (mousePressObj!=null) { 
-				if (mouseButton==LEFT) {
-					if (mousePressObj.mouseOver) 
-						mousePressObj.mouseUpL();
-					mousePressObj.mousePressedL=false;
-				}
-				if (mouseButton==RIGHT) {
-					if (mousePressObj.mouseOver)
-						mousePressObj.mouseUpR();
-					mousePressObj.mousePressedR=false;
-				}
+			if (mouseButton==LEFT) {
+				if (mousePressObj.mouseOver) 
+					mousePressObj.mouseUpL();
+				mousePressObj.mousePressedL=false;
+			}
+			if (mouseButton==RIGHT) {
+				if (mousePressObj.mouseOver)
+					mousePressObj.mouseUpR();
+				mousePressObj.mousePressedR=false;
+			}
 		}
 		
 		for(PrObj[] row: squares)
@@ -112,7 +112,7 @@ public class PrApp extends PApplet {
 					}
 				}
 			}
-			
+		mousePressObj=null;
 	}
 
 	// keyPressed() is an event-triggered method which is called once 
@@ -165,14 +165,20 @@ public class PrApp extends PApplet {
 			for(PrObj square: row)
 				square.draw();
 		// -- draw other objects
-		if (!actionStarted) {
-			textSize(24);
-			fill(0,80,50);
-			textAlign(CENTER, CENTER);
-			text("Resize and press SPACE to start", width/2, height-baseDist/2);
+		if (!actionStarted) showText();
+		if (mousePressObj!=null) {
+			stroke(mousePressObj.ocol);
+			strokeWeight(10);
+			line(mouseX,mouseY, mousePressObj.ox+mousePressObj.osize/2, mousePressObj.oy+mousePressObj.osize/2);
 		}
 	}
 
+	void showText() {
+		textSize(24);
+		fill(0,80,50);
+		textAlign(CENTER, CENTER);
+		text("Resize and press SPACE to start", width/2, height-baseDist/2);
+	}
 
 
 }
