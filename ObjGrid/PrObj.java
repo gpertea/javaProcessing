@@ -102,7 +102,10 @@ public class PrObj {
    mouseOver=contains(pr.mouseX, pr.mouseY); //test for every frame!
    if (mouseOver)
 	   col=pr.color(pr.hue(col), pr.saturation(col), pr.brightness(col)+10);
-   if (mousePressedL) pr.stroke(80);
+   if (mousePressedL) {
+	   pr.strokeWeight(1);
+	   pr.stroke(80);
+   }
    pr.fill(col);
    pr.rect(ox, oy, osize, osize);  // draw a square
  }

@@ -17,6 +17,8 @@ public class PrApp extends PApplet {
     float objSpacing; //adjusted final object spacing
     //keep track of mouse-pressed objects (for mouse dragging)
     PrObj mousePressObj; //there can be only one, for now - the last one checked
+    float mousePressX;
+    float mousePressY;
     //if some game session has started (and resizing is disabled):
 	boolean actionStarted;
 
@@ -65,12 +67,12 @@ public class PrApp extends PApplet {
 			for(PrObj square: row) {
 				if (square.dead) continue;
 				if (square.mouseOver) {
-					if (mousePressObj!=null) {
-						if (mouseButton==LEFT) mousePressObj.mousePressedL=false;
-						if (mouseButton==RIGHT) mousePressObj.mousePressedR=false;
+					if (mouseButton==LEFT) {
+						square.mouseDownL();
+						mousePressObj=square;
+						mousePressX=mouseX;
+						mousePressY=mouseY;
 					}
-					mousePressObj=square;
-					if (mouseButton==LEFT) square.mouseDownL();
 					if (mouseButton==RIGHT) square.mouseDownR();
 				}
 			}
@@ -80,26 +82,13 @@ public class PrApp extends PApplet {
 	// when a mouse button is released
 	public void mouseReleased() {
 		if (!actionStarted) return;
-		if (mousePressObj!=null) { 
-			if (mouseButton==LEFT) {
-				if (mousePressObj.mouseOver) 
-					mousePressObj.mouseUpL();
-				mousePressObj.mousePressedL=false;
-			}
-			if (mouseButton==RIGHT) {
-				if (mousePressObj.mouseOver)
-					mousePressObj.mouseUpR();
-				mousePressObj.mousePressedR=false;
-			}
-		}
-		
 		for(PrObj[] row: squares)
 			for(PrObj square: row) {
-				if (square.dead || square==mousePressObj) continue;
+				if (square.dead) continue;
 				if (square.mouseOver) {
 					if (mouseButton==LEFT) {
 						square.mouseUpL();
-						if (mousePressObj!=null) {
+						if (mousePressObj!=null && mousePressObj!=square) {
 							System.out.printf("comparing hue %d to %d\n", Math.round(hue(mousePressObj.ocol)), Math.round(hue(square.ocol)));
 							if (Math.round(hue(mousePressObj.ocol))==Math.round(hue(square.ocol))) {
 							  square.kill();
@@ -112,7 +101,11 @@ public class PrApp extends PApplet {
 					}
 				}
 			}
-		mousePressObj=null;
+		if (mousePressObj!=null) {
+			if (mouseButton==LEFT) mousePressObj.mousePressedL=false;
+			if (mouseButton==RIGHT) mousePressObj.mousePressedR=false;
+			mousePressObj=null;
+		}
 	}
 
 	// keyPressed() is an event-triggered method which is called once 
@@ -166,7 +159,7 @@ public class PrApp extends PApplet {
 				square.draw();
 		// -- draw other objects
 		if (!actionStarted) showText();
-		if (mousePressObj!=null) {
+		if (mousePressObj!=null && (abs(mouseX-mousePressX)>6 || abs(mouseY-mousePressY)>6)) {
 			stroke(mousePressObj.ocol);
 			strokeWeight(10);
 			line(mouseX,mouseY, mousePressObj.ox+mousePressObj.osize/2, mousePressObj.oy+mousePressObj.osize/2);
