@@ -1,6 +1,6 @@
 
 public class PrBullet extends PrObj {
-    int owidth; //
+    int owidth; //bullet caliber, i.e. projectile "thickness"
 
 	PrBullet(PrApp parent, float x, float y, float size, int thickness, int col) {
 		super(parent, x, y, size, col);
