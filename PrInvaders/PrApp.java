@@ -8,6 +8,14 @@ public class PrApp extends PApplet {
 	int pHeight;
 	PrShooter shooter;
 	PrObj[][] squares;
+	// -- bullets data
+	PrBullet[] bullets;
+	static final int MAX_BULLETS=10;
+	static final float BULLET_SPEED=6;
+	static final int BULLET_WIDTH=4;
+	static final float BULLET_LEN=22;
+	int liveBullets;
+	// --
 	int objSize;
 	int minObjSpacing; //minimum required distance between squares
 	int topDist;  //top padding
@@ -60,6 +68,19 @@ public class PrApp extends PApplet {
 	// when a mouse button is pressed
 	public void mousePressed() {
 		if (!actionStarted) return;
+		System.out.println("Live bullets: "+liveBullets);
+		if (mouseButton == LEFT && liveBullets<MAX_BULLETS) {
+			//fire a bullet!
+			for (int i=0;i<bullets.length;i++) {
+				if (bullets[i]==null) {
+					bullets[i]=new PrBullet(this, shooter.ox+shooter.osize/2-BULLET_WIDTH/2, 
+							shooter.oy, BULLET_LEN, BULLET_WIDTH, color(hue(shooter.ocol), 
+									saturation(shooter.ocol)+10, brightness(shooter.ocol)+10));
+					liveBullets++;
+					break;
+				}
+			}
+		}
 	}
 
 	// mouseReleased() is an event-triggered method which is called once 
@@ -110,6 +131,8 @@ public class PrApp extends PApplet {
 		// -- create the shooter object
 		int sHeight=objSize/2;
 		shooter=new PrShooter(this, width/2-sHeight/2, height-sHeight-4, sHeight, color(0,80,80));
+		// -- create bullet array
+		bullets=new PrBullet[MAX_BULLETS];
 	}
 
 	public void drawObjects() { //simply call the draw() method of *all* objects
@@ -119,6 +142,30 @@ public class PrApp extends PApplet {
 				square.draw();
 				//if actionStarted we could also 
 			}
+		//draw the bullets first, so if they overlap the shooter they should be hidden behind it
+		for (int i=0;i<bullets.length;i++) {
+			if (bullets[i]!=null) {
+				bullets[i].oy-=BULLET_SPEED; //move the bullet
+				//-- check for collision to any square in the new location
+				for(PrObj[] row: squares) {
+					for (int s=0;s<row.length;s++) {
+						if (row[s]==null || row[s].dead) continue;
+					    if (bullets[i].hit(row[s])) {
+					    	row[s].dead=true;
+					        bullets[i].dead=true;
+					    }
+					}
+				}
+				//-- check for bullets going outside the window (disappear)
+				if (bullets[i].oy+BULLET_LEN<1) 
+					bullets[i].dead=true;
+				bullets[i].draw();
+				if (bullets[i].dead) {
+					bullets[i]=null;
+					liveBullets--;
+				}
+			}
+		}
 		// -- draw the shooter
 		shooter.draw();
 		// -- not drawing anything else if the game hasn't started

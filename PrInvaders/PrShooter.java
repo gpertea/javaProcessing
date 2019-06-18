@@ -1,6 +1,6 @@
 
 public class PrShooter extends PrObj {
-
+    
 	PrShooter(PrApp parent, float x, float y, float size, int col) {
 		super(parent, x, y, size, col);
 		// TODO Auto-generated constructor stub
