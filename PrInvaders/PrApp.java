@@ -11,10 +11,10 @@ public class PrApp extends PApplet {
 	// -- bullets data
 	PrBullet[] bullets;
 	static final int MAX_BULLETS=10;
-	static final float BULLET_SPEED=6;
-	static final int BULLET_WIDTH=4;
-	static final float BULLET_LEN=22;
-	int liveBullets;
+	static final float BULLET_SPEED=6; // pixels to advance per frame
+	static final int BULLET_WIDTH=4; // projectile "thickness"
+	static final int BULLET_LEN=22; // projectile "length" 
+	int liveBullets; //keep track of the number of bullets
 	// --
 	int objSize;
 	int minObjSpacing; //minimum required distance between squares
@@ -68,7 +68,7 @@ public class PrApp extends PApplet {
 	// when a mouse button is pressed
 	public void mousePressed() {
 		if (!actionStarted) return;
-		System.out.println("Live bullets: "+liveBullets);
+		//System.out.println("Live bullets: "+liveBullets);
 		if (mouseButton == LEFT && liveBullets<MAX_BULLETS) {
 			//fire a bullet!
 			for (int i=0;i<bullets.length;i++) {

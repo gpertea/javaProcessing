@@ -4,7 +4,6 @@ public class PrBullet extends PrObj {
 
 	PrBullet(PrApp parent, float x, float y, float size, int thickness, int col) {
 		super(parent, x, y, size, col);
-		// TODO Auto-generated constructor stub
 		owidth=thickness;
 	}
 	
