@@ -1,6 +1,5 @@
 import processing.core.*;
 
-@SuppressWarnings("unused")
 public class PrObj {
  PrApp pr; //reference to parent application!
  float ox,oy; //object location on the parent canvas
@@ -10,8 +9,10 @@ public class PrObj {
  boolean mousePressedL;
  boolean mousePressedR;
  boolean dead; //if true, it's no longer drawn or interacting
+ PrSprite sprite;
+ PrSprite deathAnimation;
  int deathFrame;
- static int DeathFrames=20; //total frame count for death animation
+ int totalDeathFrames; //total frame count for death animation
  PrObj(PrApp parent, float x, float y, float size, int col) { //constructor!
    pr=parent; // so we can use all PApplet methods/fields
    ox=x;
@@ -24,7 +25,28 @@ public class PrObj {
    //.. any other object fields initialization can be here
    dead=false;
    deathFrame=0;
+   sprite=null;
+   deathAnimation=null;
+   totalDeathFrames=20;
  }
+ 
+ 
+ PrObj(PrApp parent, float x, float y, float size, String imgPath) {
+   pr=parent; // so we can use all PApplet methods/fields
+   ox=x;
+   oy=y;
+   osize=size;
+   mouseOver=false;
+   ocol=pr.color(0,80,80);
+   mousePressedL=false;
+   mousePressedR=false;
+   //.. any other object fields initialization can be here
+   sprite=new PrSprite(pr, imgPath);
+   dead=false;
+   deathFrame=0;
+   totalDeathFrames=20;
+ }
+ 
  /*
  void setPos(float x, float y) {
 	ox=x;
@@ -86,24 +108,47 @@ public class PrObj {
  
  void killAnim() {
     deathFrame++;
-	float shrinkDelta=(float)(deathFrame * osize)/DeathFrames;
+    if (deathAnimation!=null) {
+    	float tadj=(float)100.0/(totalDeathFrames/2);
+    	if (deathFrame<=totalDeathFrames/2) {
+    		pr.tint(pr.color(0,30,90), 100-tadj*deathFrame);
+    		sprite.show(ox, oy, osize, osize);
+    	}
+    	if (deathFrame<=totalDeathFrames/2)
+    	       pr.tint(100,100); //set total opacity
+    	else   pr.tint(100,100-tadj*(deathFrame-totalDeathFrames/2));   
+    	deathAnimation.show(deathFrame, ox-osize/2, oy-osize/2-osize/8, osize+osize, osize+osize);
+    	return;
+    }
+	float shrinkDelta=(float)(deathFrame * osize)/totalDeathFrames;
 	shrinkDelta/=2;
 	pr.fill(ocol); 
 	pr.rect(ox+shrinkDelta, oy+shrinkDelta, osize-shrinkDelta*2, osize-shrinkDelta*2);
+ }
+ 
+ void setDeathAnimation(String imgprefix, int count, String format) {
+	 deathAnimation=new PrSprite(pr, imgprefix, count, format);
+	 totalDeathFrames=deathAnimation.numFrames;
+	 System.out.println("Total death frames: "+totalDeathFrames);
  }
  
  void draw() {
    //  Our custom method which draws this object 
    //  on the parent application canvas,  every frame
    // We will make use of pr. graphical methods here!
-	 
+   mouseOver=contains(pr.mouseX, pr.mouseY); //test for every frame!
    //special case: object is dead/dying:
    if (dead) {
-		if (deathFrame<DeathFrames) killAnim();
+		if (deathFrame<totalDeathFrames) killAnim();
 		return;
    }
+   if (sprite!=null)  {
+	   if (mouseOver) pr.tint(pr.color(0,30,90),80);
+	   else pr.tint(100,100); //set total opacity
+	   sprite.show(ox, oy, osize, osize);
+	   return;
+   }
    int col=ocol;
-   mouseOver=contains(pr.mouseX, pr.mouseY); //test for every frame!
    if (mouseOver)
 	   col=pr.color(pr.hue(col), pr.saturation(col), pr.brightness(col)+10);
    pr.noStroke();
