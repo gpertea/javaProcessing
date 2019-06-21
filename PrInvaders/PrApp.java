@@ -8,6 +8,8 @@ public class PrApp extends PApplet {
 	int pHeight;
 	PrShooter shooter;
 	PrObj[][] squares;
+	PrSprite sqSprite;
+	PrSprite sqExplosion;
 	// -- bullets data
 	PrBullet[] bullets;
 	static final int MAX_BULLETS=10;
@@ -49,6 +51,9 @@ public class PrApp extends PApplet {
 		colorMode(HSB, 100); //setting color mode to HSB
 		surface.setResizable(true);
 		rectMode(CORNER);
+		// -- create our objects
+		// there is no need to load sprites more than once though
+		sqExplosion=new PrSprite(this, "expl1/explosion0_", 100, "tga");
 		createObjects(); //create all our objects 
 	}
 
@@ -121,11 +126,11 @@ public class PrApp extends PApplet {
 			for (int j=0;j<numCols;j++) {
 				// -- generate a random hue in range 0..100 which is a multiple of 4
 			    int hue=random.nextInt(101);
-			    hue=(hue/4)*4; //making sure it's a multiple of 4
+			    hue=(hue/4)*4; // making sure it's a multiple of 4
 				squares[i][j]=new PrObj(this, (float)sideDist + j*((float)objSize+objSpacing), 
-						                      (float)topDist + i*((float)objSize+objSpacing), objSize, color((float)hue,80,80));
-				//hue+=4;
-				//if (hue>100) hue=0; //cycle the hue
+						                      (float)topDist + i*((float)objSize+objSpacing), 
+						                      objSize, color((float)hue,30, 90), "invader.png");
+				squares[i][j].setDeathAnimation(sqExplosion);
 			}
 		}
 		// -- create the shooter object

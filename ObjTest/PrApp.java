@@ -1,3 +1,5 @@
+import java.util.Random;
+
 import processing.core.*;
 //import java.util.Random;
 
@@ -6,22 +8,8 @@ public class PrApp extends PApplet {
 	//any other custom "global" variables can be added here
 	int pWidth;
 	int pHeight;
-	//PrObj[][] squares;
 	PrObj square;
 	int objSize;
-	/*
-	int minObjSpacing; //minimum required distance between squares
-	int topDist;  //top padding
-	int sideDist; //left and right padding 
-	int baseDist;  //bottom padding
-	int numRows; //number of rows
-	int numCols; //number of columns
-    float objSpacing; //adjusted final object spacing
-    //keep track of mouse-pressed objects (for mouse dragging)
-    PrObj mousePressObj; //there can be only one, for now - the last one checked
-    //if some game session has started (and resizing is disabled):
-	boolean actionStarted;
-*/
 	public static void main(String[] args) {
 		PApplet.main("PrApp");
 	}
@@ -32,12 +20,6 @@ public class PrApp extends PApplet {
 		size(pWidth, pHeight); //setup window/canvas size
 		//-- setup the objects geometry;
 		objSize=200;    //set the object size in pixels
-		/*
-		minObjSpacing=objSize/2; //minimum spacing between squares
-		sideDist=objSize/2;
-		topDist=objSize/3;
-		baseDist=objSize*3;
-		*/
 	}
 
 	public void setup() { 
@@ -64,21 +46,7 @@ public class PrApp extends PApplet {
 	// mousePressed() is an event-triggered method which is called once 
 	// when a mouse button is pressed
 	public void mousePressed() {
-		/* 
-		if (!actionStarted) return;
-		for(PrObj[] row: squares) 
-			for(PrObj square: row) {
-				if (square.dead) continue;
-		*/
 				if (square.mouseOver) {
-					/*
-				
-					if (mousePressObj!=null) {
-						if (mouseButton==LEFT) mousePressObj.mousePressedL=false;
-						if (mouseButton==RIGHT) mousePressObj.mousePressedR=false;
-					}
-					mousePressObj=square;
-					*/
 					if (mouseButton==LEFT) square.mouseDownL();
 					if (mouseButton==RIGHT) square.mouseDownR();
 				}
@@ -110,16 +78,15 @@ public class PrApp extends PApplet {
 	*/
 	//---------- our new custom methods here ----
 	void onResize() {
-		System.out.println("Resize called!");
 		createObjects(); 
 	}
 
 	void createObjects() {
-		//Random random = new Random();
-		//int hue=random.nextInt(101);
+		Random random = new Random();
+		int hue=(random.nextInt(101)/4) * 4;
 		//square=new PrObj(this, width/2-objSize/2, height/2-objSize/2, objSize, color((float)hue,80,80));
-		square=new PrObj(this, width/2-objSize/2, height/2-objSize/2, objSize, "ship.png");
-		square.setDeathAnimation("explosion0_", 100, "tga");
+		square=new PrObj(this, width/2-objSize/2, height/2-objSize/2, objSize, color((float)hue,30,90), "ship.png");
+		square.setDeathAnimation("expl1/explosion0_", 100, "tga");
 	}
 
 	public void drawObjects() { //simply call the draw() method of *all* objects

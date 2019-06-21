@@ -1,5 +1,6 @@
 import processing.core.*;
 
+@SuppressWarnings("unused")
 public class PrObj {
  PrApp pr; //reference to parent application!
  float ox,oy; //object location on the parent canvas
@@ -31,20 +32,20 @@ public class PrObj {
  }
  
  
- PrObj(PrApp parent, float x, float y, float size, String imgPath) {
+ PrObj(PrApp parent, float x, float y, float size, int col, String imgPath) {
    pr=parent; // so we can use all PApplet methods/fields
    ox=x;
    oy=y;
    osize=size;
    mouseOver=false;
-   ocol=pr.color(0,80,80);
+   ocol=col;
    mousePressedL=false;
    mousePressedR=false;
    //.. any other object fields initialization can be here
    sprite=new PrSprite(pr, imgPath);
+   totalDeathFrames=20;
    dead=false;
    deathFrame=0;
-   totalDeathFrames=20;
  }
  
  /*
@@ -99,7 +100,7 @@ public class PrObj {
 	float hue=pr.hue(ocol);
 	hue+=4;
 	if (hue>100) hue=0;
-	ocol=pr.color(hue, pr.saturation(ocol), pr.brightness(ocol));
+	ocol=pr.color(hue, 30, 90);
  }
  
  boolean contains(float x, float y) {
@@ -111,12 +112,12 @@ public class PrObj {
     if (deathAnimation!=null) {
     	float tadj=(float)100.0/(totalDeathFrames/2);
     	if (deathFrame<=totalDeathFrames/2) {
-    		pr.tint(pr.color(0,30,90), 100-tadj*deathFrame);
+    		pr.tint(pr.hue(ocol),pr.saturation(ocol), 90, 100-tadj*deathFrame);
     		sprite.show(ox, oy, osize, osize);
     	}
     	if (deathFrame<=totalDeathFrames/2)
-    	       pr.tint(100,100); //set total opacity
-    	else   pr.tint(100,100-tadj*(deathFrame-totalDeathFrames/2));   
+    	       pr.tint(pr.hue(ocol), pr.saturation(ocol),90, 100); //set total opacity
+    	else   pr.tint(pr.hue(ocol), pr.saturation(ocol),90, 100-tadj*(deathFrame-totalDeathFrames/2));   
     	deathAnimation.show(deathFrame, ox-osize/2, oy-osize/2-osize/8, osize+osize, osize+osize);
     	return;
     }
@@ -143,8 +144,12 @@ public class PrObj {
 		return;
    }
    if (sprite!=null)  {
-	   if (mouseOver) pr.tint(pr.color(0,30,90),80);
-	   else pr.tint(100,100); //set total opacity
+	   //pr.fill(pr.color(pr.hue(ocol),50, 100));
+	   //pr.noStroke();
+	   //pr.rect(ox, oy, osize, osize);
+	   if (mouseOver) pr.tint(pr.hue(ocol),30, 90,100);
+	   else pr.tint(pr.hue(ocol),30, 90, 100); //set total opacity but with ocol hue
+	   //System.out.printf("HSB = (%.1f, %.1f, %.1f)\n", pr.hue(ocol), pr.saturation(ocol), pr.brightness(ocol));
 	   sprite.show(ox, oy, osize, osize);
 	   return;
    }
