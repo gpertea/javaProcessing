@@ -155,24 +155,24 @@ public class PrObj {
    //  Our custom method which draws this object 
    //  on the parent application canvas,  every frame
    // We will make use of pr. graphical methods here!
-   mouseOver=contains(pr.mouseX, pr.mouseY); //test for every frame!
+   //mouseOver=contains(pr.mouseX, pr.mouseY); //test for every frame!
    //special case: object is dead/dying:
    if (dead) {
 		if (deathFrame<totalDeathFrames) killAnimation();
 		return;
    }
    if (sprite!=null)  {
-	   if (mouseOver) pr.tint(pr.hue(ocol),30, 100,100);
-	   else pr.tint(pr.hue(ocol),30, 90, 100); //set total opacity but with ocol hue
-	   //System.out.printf("HSB = (%.1f, %.1f, %.1f)\n", pr.hue(ocol), pr.saturation(ocol), pr.brightness(ocol));
+	   //if (mouseOver) pr.tint(pr.hue(ocol),30, 100,100);
+	   //else
+		   pr.tint(pr.hue(ocol),30, 90, 100); //set total opacity but with ocol hue
 	   sprite.show(ox, oy, osize, osize);
 	   return;
    }
    //-- plain squares if no sprite is loaded:
    int col=ocol;
    pr.noStroke();
-   if (mouseOver)
-	   col=pr.color(pr.hue(col), pr.saturation(col), pr.brightness(col)+10);
+   //if (mouseOver)
+   //   col=pr.color(pr.hue(col), pr.saturation(col), pr.brightness(col)+10);
    if (mousePressedL) {
 	   pr.strokeWeight(1);
 	   pr.stroke(80);

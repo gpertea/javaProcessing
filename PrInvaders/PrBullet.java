@@ -6,6 +6,11 @@ public class PrBullet extends PrObj {
 		super(parent, x, y, size, col);
 		owidth=thickness;
 	}
+
+	PrBullet(PrApp parent, float x, float y, float size, int thickness, PrSprite img) {
+		super(parent, x, y, size, parent.color(0,60,90), img);
+		owidth=thickness;
+	}
 	
 	boolean hit(PrObj target) {
 		float leftX   = Math.max( ox, target.ox );
@@ -16,6 +21,11 @@ public class PrBullet extends PrObj {
 	}
 	
 	void draw() {
+		if (sprite!=null) {
+			pr.noTint();
+			sprite.show(ox, oy, owidth, osize);
+			return;
+		}
 		pr.noStroke();
 		pr.fill(ocol);
 		pr.rect(ox, oy, owidth, osize);  // draw a square

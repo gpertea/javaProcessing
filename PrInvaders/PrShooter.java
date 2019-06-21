@@ -6,11 +6,20 @@ public class PrShooter extends PrObj {
 		// TODO Auto-generated constructor stub
 	}
 
+	PrShooter(PrApp parent, float x, float y, float size, int col, PrSprite img) {
+		super(parent, x, y, size, col, img);
+	}
+
 	void draw() {
 		//if game has started, follow the mouse on the x axis:
 		if (pr.actionStarted) {
 			ox=pr.mouseX;
 			if (ox>pr.width-osize) ox=pr.width-osize;
+		}
+		if (sprite!=null) {
+			pr.noTint();
+			sprite.show(ox, oy, osize, osize);
+			return;
 		}
 		//draw a triangle instead!
 		pr.stroke(4);

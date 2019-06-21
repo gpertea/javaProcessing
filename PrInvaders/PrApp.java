@@ -9,12 +9,14 @@ public class PrApp extends PApplet {
 	PrShooter shooter;
 	PrObj[][] squares;
 	PrSprite sqSprite;
+	PrSprite bulletSprite;
 	PrSprite sqExplosion;
+	PrSprite shipSprite;
 	// -- bullets data
 	PrBullet[] bullets;
-	static final int MAX_BULLETS=10;
+	static final int MAX_BULLETS=20;
 	static final float BULLET_SPEED=6; // pixels to advance per frame
-	static final int BULLET_WIDTH=4; // projectile "thickness"
+	static final int BULLET_WIDTH=5; // projectile "thickness"
 	static final int BULLET_LEN=22; // projectile "length" 
 	int liveBullets; //keep track of the number of bullets
 	// --
@@ -52,8 +54,11 @@ public class PrApp extends PApplet {
 		surface.setResizable(true);
 		rectMode(CORNER);
 		// -- create our objects
-		// there is no need to load sprites more than once though
+		// there is no need to load some often-used sprites more than once though
 		sqExplosion=new PrSprite(this, "expl1/explosion0_", 100, "tga");
+		sqSprite=new PrSprite(this, "invader.png");
+		bulletSprite=new PrSprite(this, "bullet.png");
+		shipSprite=new PrSprite(this, "ship.png");
 		createObjects(); //create all our objects 
 	}
 
@@ -79,8 +84,7 @@ public class PrApp extends PApplet {
 			for (int i=0;i<bullets.length;i++) {
 				if (bullets[i]==null) {
 					bullets[i]=new PrBullet(this, shooter.ox+shooter.osize/2-BULLET_WIDTH/2, 
-							shooter.oy, BULLET_LEN, BULLET_WIDTH, color(hue(shooter.ocol), 
-									saturation(shooter.ocol)+10, brightness(shooter.ocol)+10));
+							shooter.oy, BULLET_LEN, BULLET_WIDTH, bulletSprite);
 					liveBullets++;
 					break;
 				}
@@ -129,13 +133,13 @@ public class PrApp extends PApplet {
 			    hue=(hue/4)*4; // making sure it's a multiple of 4
 				squares[i][j]=new PrObj(this, (float)sideDist + j*((float)objSize+objSpacing), 
 						                      (float)topDist + i*((float)objSize+objSpacing), 
-						                      objSize, color((float)hue,30, 90), "invader.png");
+						                      objSize, color((float)hue,30, 90), sqSprite);
 				squares[i][j].setDeathAnimation(sqExplosion);
 			}
 		}
 		// -- create the shooter object
-		int sHeight=objSize/2;
-		shooter=new PrShooter(this, width/2-sHeight/2, height-sHeight-4, sHeight, color(0,80,80));
+		int shipSize=objSize+objSize/2;
+		shooter=new PrShooter(this, width/2-shipSize/2, height-shipSize-4, shipSize, color(0,80,80), shipSprite);
 		// -- create bullet array
 		bullets=new PrBullet[MAX_BULLETS];
 	}
@@ -145,7 +149,6 @@ public class PrApp extends PApplet {
 		for(PrObj[] row: squares)
 			for(PrObj square: row) {
 				square.draw();
-				//if actionStarted we could also 
 			}
 		//draw the bullets first, so if they overlap the shooter they should be hidden behind it
 		for (int i=0;i<bullets.length;i++) {
@@ -153,8 +156,12 @@ public class PrApp extends PApplet {
 				bullets[i].oy-=BULLET_SPEED; //move the bullet
 				//-- check for collision to any square in the new location
 				for(PrObj[] row: squares) {
+					if (row[0].oy>bullets[i].oy+BULLET_LEN) break; //bullet above this row, no chance to hit any more squares 
+					if (bullets[i].oy>row[0].oy+objSize) continue; //bullet below this row, go to next row; 
 					for (int s=0;s<row.length;s++) {
-						if (row[s]==null || row[s].dead) continue;
+						if (row[s].ox>bullets[i].ox+BULLET_WIDTH) break; //bullet to the left of this square, no chance to hit any more in this row 
+						if (bullets[i].ox>row[s].ox+objSize) continue; //bullet to the right of this square
+						if (row[s].dead) continue;
 					    if (bullets[i].hit(row[s])) {
 					    	row[s].dead=true;
 					        bullets[i].dead=true;
@@ -185,7 +192,7 @@ public class PrApp extends PApplet {
 		textSize(24);
 		fill(0,80,50);
 		textAlign(CENTER, CENTER);
-		text("Resize and press SPACE to start", width/2, height-baseDist/2);
+		text("Resize and press SPACE to start", width/2, height-baseDist);
 	}
 
 
