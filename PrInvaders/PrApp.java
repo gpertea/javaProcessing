@@ -38,7 +38,9 @@ public class PrApp extends PApplet {
 		//--  this runs once before setup()
 		pWidth=800;
 		pHeight=600;
-		size(pWidth, pHeight); //setup window/canvas size
+		//size(pWidth, pHeight); //setup window/canvas size
+		size(pWidth, pHeight, "processing.opengl.PGraphics2D");
+
 		//-- setup the objects geometry;
 		objSize=60;    //set the object size in pixels
 		minObjSpacing=objSize/2; //minimum spacing between squares
@@ -49,8 +51,10 @@ public class PrApp extends PApplet {
 
 	public void setup() { 
 		//--  this runs once after settings() and before draw()
-		// Here we can set up other graphical properties, 
+		// Here we can set up other graphical properties,
+
 		colorMode(HSB, 100); //setting color mode to HSB
+		
 		surface.setResizable(true);
 		rectMode(CORNER);
 		// -- create our objects
@@ -72,6 +76,7 @@ public class PrApp extends PApplet {
 		}
 		background(50);//clear the canvas
 		drawObjects(); //draw all our objects
+		surface.setTitle("Invaders ("+Math.round(frameRate) + " fps)");
 	}
 
 	// mousePressed() is an event-triggered method which is called once 
@@ -84,7 +89,8 @@ public class PrApp extends PApplet {
 			for (int i=0;i<bullets.length;i++) {
 				if (bullets[i]==null) {
 					bullets[i]=new PrBullet(this, shooter.ox+shooter.osize/2-BULLET_WIDTH/2, 
-							shooter.oy, BULLET_LEN, BULLET_WIDTH, bulletSprite);
+							shooter.oy, BULLET_LEN, BULLET_WIDTH, color(0,60,100));
+					bullets[i].sprite=bulletSprite;
 					liveBullets++;
 					break;
 				}
@@ -133,13 +139,15 @@ public class PrApp extends PApplet {
 			    hue=(hue/4)*4; // making sure it's a multiple of 4
 				squares[i][j]=new PrObj(this, (float)sideDist + j*((float)objSize+objSpacing), 
 						                      (float)topDist + i*((float)objSize+objSpacing), 
-						                      objSize, color((float)hue,30, 90), sqSprite);
+						                      objSize, color((float)hue,30, 90));
+				squares[i][j].sprite=sqSprite;
 				squares[i][j].setDeathAnimation(sqExplosion);
 			}
 		}
 		// -- create the shooter object
 		int shipSize=objSize+objSize/2;
-		shooter=new PrShooter(this, width/2-shipSize/2, height-shipSize-4, shipSize, color(0,80,80), shipSprite);
+		shooter=new PrShooter(this, width/2-shipSize/2, height-shipSize-4, shipSize, color(0,80,80));
+		shooter.sprite = shipSprite;
 		// -- create bullet array
 		bullets=new PrBullet[MAX_BULLETS];
 	}

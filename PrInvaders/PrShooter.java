@@ -13,7 +13,7 @@ public class PrShooter extends PrObj {
 	void draw() {
 		//if game has started, follow the mouse on the x axis:
 		if (pr.actionStarted) {
-			ox=pr.mouseX;
+			ox=pr.mouseX-osize/2;
 			if (ox>pr.width-osize) ox=pr.width-osize;
 		}
 		if (sprite!=null) {
