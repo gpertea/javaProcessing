@@ -171,7 +171,7 @@ public class PrApp extends PApplet {
 						if (bullets[i].ox>row[s].ox+objSize) continue; //bullet to the right of this square
 						if (row[s].dead) continue;
 					    if (bullets[i].hit(row[s])) {
-					    	row[s].dead=true;
+					    	row[s].kill();
 					        bullets[i].dead=true;
 					    }
 					}

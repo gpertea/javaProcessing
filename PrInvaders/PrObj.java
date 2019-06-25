@@ -12,6 +12,7 @@ public class PrObj {
  boolean dead; //if true, it's no longer drawn or interacting
  PrSprite sprite;
  PrSprite deathAnimation;
+ float deathRotation;
  int deathFrame;
  int totalDeathFrames; //total frame count for death animation
  
@@ -103,6 +104,10 @@ public class PrObj {
  
  void kill() {
 	 dead=true;
+	 if (deathAnimation!=null) {
+		 deathRotation=(float)Math.random()*(2*PApplet.PI);
+		 System.out.println("Rotation angle = "+deathRotation);
+	 }
  }
  
  
@@ -127,8 +132,16 @@ public class PrObj {
 		 }
 		 if (deathFrame<=totalDeathFrames/2)
 			 pr.tint(pr.hue(ocol), pr.saturation(ocol),90, 100); //set total opacity
-		 else   pr.tint(pr.hue(ocol), pr.saturation(ocol),90, 100-tadj*(deathFrame-totalDeathFrames/2));   
-		 deathAnimation.show(deathFrame, ox-osize/2, oy-osize/2-osize/8, osize+osize, osize+osize);
+		 else   pr.tint(pr.hue(ocol), pr.saturation(ocol),90, 100-tadj*(deathFrame-totalDeathFrames/2));
+		 //deathAnimation.show(deathFrame, ox-osize/2, oy-osize/2-osize/8, osize+osize, osize+osize);
+		 float eX=ox-osize/2;
+		 float eY=oy-osize/2-osize/8;
+		 //float eSize=2*osize; //explosion display size is twice the object size  
+		 pr.pushMatrix();
+		 pr.translate(eX+osize, eY+osize); //reposition origin in the blast center
+		 pr.rotate(deathRotation); //rotate the explotion
+		 deathAnimation.show(deathFrame, -osize, -osize, 2*osize, 2*osize);
+		 pr.popMatrix();
 		 return;
 	 }
 	 float shrinkDelta=(float)(deathFrame * osize)/totalDeathFrames;
