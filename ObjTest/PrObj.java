@@ -12,6 +12,7 @@ public class PrObj {
  boolean dead; //if true, it's no longer drawn or interacting
  PrSprite sprite;
  PrSprite deathAnimation;
+ float deathRotation;
  int deathFrame;
  int totalDeathFrames; //total frame count for death animation
  PrObj(PrApp parent, float x, float y, float size, int col) { //constructor!
@@ -46,6 +47,7 @@ public class PrObj {
    totalDeathFrames=20;
    dead=false;
    deathFrame=0;
+   deathRotation=0;
  }
  
  /*
@@ -86,12 +88,18 @@ public class PrObj {
    killOrResurect();
  }
  
+ void kill() {
+	 dead=true;
+	 deathRotation = (float) (Math.random()*2*PApplet.PI); 
+ }
+ 
+ 
  void killOrResurect() {
 	 if (dead) {
 		 dead=false;
 		 deathFrame=0;
 	 } else {
-	   dead=true;
+	   kill();
 	 }
 	 
  }
@@ -106,8 +114,8 @@ public class PrObj {
  boolean contains(float x, float y) {
 	 return (x>=ox && x<=ox+osize && y>=oy && y<=oy+osize);
  }
- 
- void killAnim() {
+ /*
+ void killAnimation() {
     deathFrame++;
     if (deathAnimation!=null) {
     	float tadj=(float)100.0/(totalDeathFrames/2);
@@ -126,6 +134,48 @@ public class PrObj {
 	pr.fill(ocol); 
 	pr.rect(ox+shrinkDelta, oy+shrinkDelta, osize-shrinkDelta*2, osize-shrinkDelta*2);
  }
+ */
+ 
+ void killAnimation() {
+	   deathFrame++;
+	   if (deathAnimation != null) {
+	     float fadingShipFrames = (float) (((float) totalDeathFrames) * (0.25));
+	     //for the first fadingShipFrames frames, show the invader ship fading away
+	     float explOpacity = 100;
+	     float fadingExplFrames = (float) (((float) totalDeathFrames) * (0.75));
+	     //for the last fadingExplFrames frames make the explosion sprite fade away
+	     if (deathFrame >= fadingExplFrames) {
+	         explOpacity = ((float)(totalDeathFrames-deathFrame)*100)/((float)totalDeathFrames/4);
+	     }
+	     //deathAnimation.show(deathFrame, ox-osize/2, oy-osize/2-osize/8, 
+	     //                                2*osize, 2*osize);
+	     //the explosion should be shown rotated at deathRotation angle
+	     // while it keeps rotating in rotateAnim increments!
+	     float rotateAnim = (float)(PApplet.PI/400);
+	     if (deathRotation>PApplet.PI) rotateAnim = -rotateAnim;
+	     pr.pushMatrix();
+	     pr.translate(ox + osize/2, oy + osize/2);
+	     pr.rotate(rotateAnim * (float) deathFrame);
+	     //for the first fadingShipFrames frames, show the invader ship fading away
+	     if (deathFrame <= fadingShipFrames) {
+	         pr.tint(ocol, 100 - ((float) deathFrame * 100 / fadingShipFrames));
+	         //sprite.show(ox, oy, osize, osize);
+	         sprite.show(-osize/2, -osize/2, osize, osize);
+	     }
+
+	     pr.rotate(deathRotation);
+	     pr.tint(ocol, explOpacity);
+	     deathAnimation.show(deathFrame, -osize, -osize, 2*osize, 2*osize);
+	     pr.popMatrix();
+	     
+	     return;
+	   }
+	   //plain death animation: drawing a shrinking square:
+	   float deathSpeed = osize * deathFrame / totalDeathFrames;
+	   pr.fill(ocol);
+	   pr.rect(ox + deathSpeed/2, oy + deathSpeed/2, 
+	           osize - deathSpeed, osize - deathSpeed);
+ }
  
  void setDeathAnimation(String imgprefix, int count, String format) {
 	 deathAnimation=new PrSprite(pr, imgprefix, count, format);
@@ -140,7 +190,7 @@ public class PrObj {
    mouseOver=contains(pr.mouseX, pr.mouseY); //test for every frame!
    //special case: object is dead/dying:
    if (dead) {
-		if (deathFrame<totalDeathFrames) killAnim();
+		if (deathFrame<totalDeathFrames) killAnimation();
 		return;
    }
    if (sprite!=null)  {
