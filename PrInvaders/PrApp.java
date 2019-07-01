@@ -25,12 +25,22 @@ public class PrApp extends PApplet {
 	int topDist;  //top padding
 	int sideDist; //left and right padding 
 	int baseDist;  //bottom padding
+	//-- calculated from the above and window size:
 	int numRows; //number of rows
 	int numCols; //number of columns
+	int liveInvaders; //keep track of the remaining invaders
+	
     float objSpacing; //adjusted final object spacing
+    // -- initial invaders movement speed
+    float invSpeedX;
+    float invDirection; //flipping X-move direction when any invader gets too close to left or right side of the screen   
+    float invSpeedY;
+    
     //if some game session has started (and resizing is disabled):
-	boolean actionStarted;
-
+	boolean liveAction;
+	boolean gameOver;
+	boolean gameLost;
+	int winFrame; //frame when winning condition was achieved (liveInvaders got to 0)
 	public static void main(String[] args) {
 		PApplet.main("PrApp");
 	}
@@ -42,11 +52,15 @@ public class PrApp extends PApplet {
 		size(pWidth, pHeight, "processing.opengl.PGraphics2D");
 
 		//-- setup the objects geometry;
-		objSize=60;    //set the object size in pixels
+		objSize=50;    //set the object size in pixels
 		minObjSpacing=objSize/2; //minimum spacing between squares
-		sideDist=objSize/2;
+		sideDist=objSize*2;
 		topDist=objSize/3;
-		baseDist=objSize*3;
+		baseDist=objSize*5;
+		//--
+		invSpeedX=(float)1.2;
+		invSpeedY=(float)1.5;
+		invDirection=1;
 	}
 
 	public void setup() { 
@@ -82,7 +96,7 @@ public class PrApp extends PApplet {
 	// mousePressed() is an event-triggered method which is called once 
 	// when a mouse button is pressed
 	public void mousePressed() {
-		if (!actionStarted) return;
+		if (!liveAction) return;
 		//System.out.println("Live bullets: "+liveBullets);
 		if (mouseButton == LEFT && liveBullets<MAX_BULLETS) {
 			//fire a bullet!
@@ -101,14 +115,14 @@ public class PrApp extends PApplet {
 	// mouseReleased() is an event-triggered method which is called once 
 	// when a mouse button is released
 	public void mouseReleased() {
-		if (!actionStarted) return;
+		if (!liveAction) return;
 	}
 
 	// keyPressed() is an event-triggered method which is called once 
 	// when a key was pressed
 	public void keyPressed() {
 		if (key==' ') {
-			actionStarted=true;
+			liveAction=true;
 			surface.setResizable(false);
 		}
 	}
@@ -144,6 +158,7 @@ public class PrApp extends PApplet {
 				squares[i][j].setDeathAnimation(sqExplosion);
 			}
 		}
+		liveInvaders=numCols*numRows;
 		// -- create the shooter object
 		int shipSize=objSize+objSize/2;
 		shooter=new PrShooter(this, width/2-shipSize/2, height-shipSize-4, shipSize, color(0,80,80));
@@ -154,10 +169,52 @@ public class PrApp extends PApplet {
 
 	public void drawObjects() { //simply call the draw() method of *all* objects
 		// -- draw the grid:
-		for(PrObj[] row: squares)
-			for(PrObj square: row) {
-				square.draw();
+		boolean sideHit=false; //if the invaders group hit left or right side of the window
+		float advanceY=0;
+		if (liveAction) {
+			for (int r=0;r<numRows; r++) {
+				for (int c=0;c<numCols; c++) {
+					if (!squares[r][c].dead) {
+						if (liveAction) {
+							float newX=squares[r][c].ox+invSpeedX*invDirection;
+							//did we hit right side?
+							if (newX+objSize>width-minObjSpacing) {
+								sideHit=true;
+								invDirection=-1;
+								break;
+							}
+							//did we hit left side?
+							if (newX<=minObjSpacing) {
+								sideHit=true;
+								invDirection=1;
+								break;
+							}
+						} //game started
+					} //alive invader
+				} //for each column
+				if (sideHit) break;
+			} //for each row
+			// we checked for moving direction changes, now advance the invaders accordingly
+			if (sideHit) {
+				advanceY = invSpeedY;
+				invSpeedX += 0.05;
 			}
+		}
+		for (int r=0;r<numRows; r++) {
+			for (int c=0;c<numCols; c++) {
+				if (liveAction) {
+				    squares[r][c].advance(invSpeedX*invDirection, advanceY);
+				    if (squares[r][c].oy+objSize>=shooter.oy) 
+				    	gameLost=true;
+				}
+			    squares[r][c].draw();
+			} //for each column
+		} //for each row
+	    if (liveInvaders==0 && winFrame > 0 && frameCount > winFrame + 120) {
+	    	gameOver=true;
+	    	liveAction=false;
+	    }
+
 		//draw the bullets first, so if they overlap the shooter they should be hidden behind it
 		for (int i=0;i<bullets.length;i++) {
 			if (bullets[i]!=null) {
@@ -172,6 +229,8 @@ public class PrApp extends PApplet {
 						if (row[s].dead) continue;
 					    if (bullets[i].hit(row[s])) {
 					    	row[s].kill();
+					    	liveInvaders--;
+					    	if (liveInvaders==0) winFrame = frameCount;
 					        bullets[i].dead=true;
 					    }
 					}
@@ -188,19 +247,32 @@ public class PrApp extends PApplet {
 		}
 		// -- draw the shooter
 		shooter.draw();
+		if (gameLost) {
+			liveAction=false;
+			gameOver=true;
+		}
 		// -- not drawing anything else if the game hasn't started
-		if (!actionStarted) {
-			showText();
+		if (!liveAction) {
+			if (gameOver) { 
+				showText(gameLost ? "GAME OVER - You lost!" : "YOU WIN!");
+			}
+			else 
+				showText("Resize, then press SPACE to start");
 			return;
 		}
 		// -- draw any live projectiles, while checking if they hit any squares:
 	}
 
-	void showText() {
+	void showText(String s) {
 		textSize(24);
-		fill(0,80,50);
+		fill(0,0,80);
+		noStroke();
+		int twidth=(int)textWidth(s)+40;
+		rect((float)(0.5*(float)(width-twidth)), height - baseDist + (float)objSize*(float)0.75, 
+				(float)twidth, (float)baseDist * (float)0.5-(float)objSize);
+		fill(0,80,70);
 		textAlign(CENTER, CENTER);
-		text("Resize and press SPACE to start", width/2, height-baseDist);
+		text(s, width/2, (float)height-(float)baseDist*(float)0.5-(float)objSize);
 	}
 
 

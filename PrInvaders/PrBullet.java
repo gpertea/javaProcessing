@@ -7,11 +7,6 @@ public class PrBullet extends PrObj {
 		owidth=thickness;
 	}
 
-	PrBullet(PrApp parent, float x, float y, float size, int thickness, PrSprite img) {
-		super(parent, x, y, size, parent.color(0,60,90), img);
-		owidth=thickness;
-	}
-	
 	boolean hit(PrObj target) {
 		float leftX   = Math.max( ox, target.ox );
 		float rightX  = Math.min( ox + owidth, target.ox + target.osize );
