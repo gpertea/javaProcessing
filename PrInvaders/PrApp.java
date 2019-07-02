@@ -28,7 +28,6 @@ public class PrApp extends PApplet {
 	//-- calculated from the above and window size:
 	int numRows; //number of rows
 	int numCols; //number of columns
-	int liveInvaders; //keep track of the remaining invaders
 	
     float objSpacing; //adjusted final object spacing
     // -- initial invaders movement speed
@@ -37,9 +36,10 @@ public class PrApp extends PApplet {
     float invSpeedY;
     
     //if some game session has started (and resizing is disabled):
-	boolean liveAction;
+	boolean actionStarted;
 	boolean gameOver;
 	boolean gameLost;
+	int liveInvaders; //keep track of the remaining invaders
 	int winFrame; //frame when winning condition was achieved (liveInvaders got to 0)
 	public static void main(String[] args) {
 		PApplet.main("PrApp");
@@ -58,8 +58,8 @@ public class PrApp extends PApplet {
 		topDist=objSize/3;
 		baseDist=objSize*5;
 		//--
-		invSpeedX=(float)1.2;
-		invSpeedY=(float)1.5;
+		invSpeedX=(float)1.5;
+		invSpeedY=(float)1.7;
 		invDirection=1;
 	}
 
@@ -96,7 +96,7 @@ public class PrApp extends PApplet {
 	// mousePressed() is an event-triggered method which is called once 
 	// when a mouse button is pressed
 	public void mousePressed() {
-		if (!liveAction) return;
+		if (!actionStarted) return;
 		//System.out.println("Live bullets: "+liveBullets);
 		if (mouseButton == LEFT && liveBullets<MAX_BULLETS) {
 			//fire a bullet!
@@ -115,14 +115,14 @@ public class PrApp extends PApplet {
 	// mouseReleased() is an event-triggered method which is called once 
 	// when a mouse button is released
 	public void mouseReleased() {
-		if (!liveAction) return;
+		if (!actionStarted) return;
 	}
 
 	// keyPressed() is an event-triggered method which is called once 
 	// when a key was pressed
 	public void keyPressed() {
 		if (key==' ') {
-			liveAction=true;
+			actionStarted=true;
 			surface.setResizable(false);
 		}
 	}
@@ -171,25 +171,23 @@ public class PrApp extends PApplet {
 		// -- draw the grid:
 		boolean sideHit=false; //if the invaders group hit left or right side of the window
 		float advanceY=0;
-		if (liveAction) {
+		if (actionStarted) {
 			for (int r=0;r<numRows; r++) {
 				for (int c=0;c<numCols; c++) {
 					if (!squares[r][c].dead) {
-						if (liveAction) {
-							float newX=squares[r][c].ox+invSpeedX*invDirection;
-							//did we hit right side?
-							if (newX+objSize>width-minObjSpacing) {
-								sideHit=true;
-								invDirection=-1;
-								break;
-							}
-							//did we hit left side?
-							if (newX<=minObjSpacing) {
-								sideHit=true;
-								invDirection=1;
-								break;
-							}
-						} //game started
+						float newX=squares[r][c].ox+invSpeedX*invDirection;
+						//did we hit right side?
+						if (newX+objSize >= width) {
+							sideHit=true;
+							invDirection=-1;
+							break;
+						}
+						//did we hit left side?
+						if (newX <= 0) {
+							sideHit=true;
+							invDirection=1;
+							break;
+						}
 					} //alive invader
 				} //for each column
 				if (sideHit) break;
@@ -197,12 +195,12 @@ public class PrApp extends PApplet {
 			// we checked for moving direction changes, now advance the invaders accordingly
 			if (sideHit) {
 				advanceY = invSpeedY;
-				invSpeedX += 0.05;
+				invSpeedX += 0.08;
 			}
-		}
+		} //if actionStarted
 		for (int r=0;r<numRows; r++) {
 			for (int c=0;c<numCols; c++) {
-				if (liveAction) {
+				if (actionStarted) {
 				    squares[r][c].advance(invSpeedX*invDirection, advanceY);
 				    if (squares[r][c].oy+objSize>=shooter.oy) 
 				    	gameLost=true;
@@ -212,7 +210,7 @@ public class PrApp extends PApplet {
 		} //for each row
 	    if (liveInvaders==0 && winFrame > 0 && frameCount > winFrame + 120) {
 	    	gameOver=true;
-	    	liveAction=false;
+	    	actionStarted=false;
 	    }
 
 		//draw the bullets first, so if they overlap the shooter they should be hidden behind it
@@ -248,11 +246,11 @@ public class PrApp extends PApplet {
 		// -- draw the shooter
 		shooter.draw();
 		if (gameLost) {
-			liveAction=false;
+			actionStarted=false;
 			gameOver=true;
 		}
 		// -- not drawing anything else if the game hasn't started
-		if (!liveAction) {
+		if (!actionStarted) {
 			if (gameOver) { 
 				showText(gameLost ? "GAME OVER - You lost!" : "YOU WIN!");
 			}
@@ -260,7 +258,6 @@ public class PrApp extends PApplet {
 				showText("Resize, then press SPACE to start");
 			return;
 		}
-		// -- draw any live projectiles, while checking if they hit any squares:
 	}
 
 	void showText(String s) {
