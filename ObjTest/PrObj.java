@@ -111,8 +111,8 @@ public class PrObj {
 	ocol=pr.color(hue, 30, 90);
  }
  
- boolean contains(float x, float y) {
-	 return (x>=ox && x<=ox+osize && y>=oy && y<=oy+osize);
+ boolean contains(float ax, float ay) {
+	 return (ax>=ox && ax<=ox+osize && ay>=oy && ay<=oy+osize);
  }
  /*
  void killAnimation() {
