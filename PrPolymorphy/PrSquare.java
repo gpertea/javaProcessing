@@ -1,5 +1,5 @@
 
-public class PrSquare extends PrObj implements PrShowable, PrHilightable {
+public class PrSquare extends PrObj implements PrShowable, PrHilightable, PrCaptionable {
 
 	PrSquare(PrApp parent, float ax, float ay, float asize, int acol) {
 		super(parent, ax, ay, asize, acol);
@@ -20,20 +20,25 @@ public class PrSquare extends PrObj implements PrShowable, PrHilightable {
 	}
 	
 	public void show() {
-		   //  Our custom method which draws this object 
-		   //  on the parent application canvas,  every frame
-		   // We will make use of pr. graphical methods here!
-		   if (!hilight()) {
-			      pr.fill(col);
-			      pr.noStroke();
-		   }
-		   pr.rect(x, y, size, size);  // draw a square
-		 }
+	   //  Our custom method which draws this object 
+	   //  on the parent application canvas,  every frame
+	   // We will make use of pr. graphical methods here!
+	   if (!hilight()) {
+	      pr.fill(col);
+	      pr.noStroke();
+	   }
+	   pr.rect(x, y, size, size);  // draw a square
+       showCaption();
+	}
 
+	
 	/*
 	public void mouseLClick() {
 		shiftHue();
 	}
 	public void mouseRClick() { }
     */
+	public void setCaption(String s) {
+		caption=s;
+	}
 }

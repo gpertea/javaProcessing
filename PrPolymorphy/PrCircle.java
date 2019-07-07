@@ -1,5 +1,5 @@
 
-public class PrCircle extends PrObj implements PrShowable, PrHilightable, PrClickable {
+public class PrCircle extends PrObj implements PrShowable, PrHilightable, PrClickable, PrCaptionable {
 
 	PrCircle(PrApp parent, float ax, float ay, float asize, int acol) {
 		super(parent, ax, ay, asize, acol);
@@ -28,8 +28,12 @@ public class PrCircle extends PrObj implements PrShowable, PrHilightable, PrClic
 	      pr.noStroke();
 	   }
 	   pr.circle(x+size/2, y+size/2, size);
+	   showCaption();
 	}
 	
+	public void setCaption(String s) {
+		caption=s;
+	}
 
 	public void mouseLClick() {
 		shiftHue();
