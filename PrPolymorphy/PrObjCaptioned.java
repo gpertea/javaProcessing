@@ -7,12 +7,17 @@ public abstract class PrObjCaptioned extends PrObj {
 		super(parent, ax, ay, asize, acol);
 	}
 
+	
 	void shiftHue() {
 		float hue = pr.hue(col);
 		hue += 4;
 		if (hue > 100)
 			hue = 0;
 		col = pr.color(hue, pr.saturation(col), pr.brightness(col));
+	}
+
+	public void setCaption(String s) {
+		caption=s;
 	}
 
 	public void showCaption() {

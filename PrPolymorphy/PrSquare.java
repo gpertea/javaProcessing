@@ -38,8 +38,5 @@ public class PrSquare extends PrObjCaptioned implements PrHilightable, PrClickab
 	public void mouseRClick() { 
 		pr.destroy(this);
 	}
-    
-	public void setCaption(String s) {
-		caption=s;
-	}
+   
 }

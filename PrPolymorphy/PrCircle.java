@@ -31,10 +31,6 @@ public class PrCircle extends PrObjCaptioned implements PrHilightable, PrClickab
 	   showCaption();
 	}
 	
-	public void setCaption(String s) {
-		caption=s;
-	}
-
 	public void mouseLClick() {
 		shiftHue();
 	}
