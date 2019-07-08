@@ -1,5 +1,5 @@
 
-public class PrSquare extends PrObj implements PrShowable, PrHilightable, PrCaptionable {
+public class PrSquare extends PrObjCaptioned implements PrHilightable, PrClickable, PrCaptionable {
 
 	PrSquare(PrApp parent, float ax, float ay, float asize, int acol) {
 		super(parent, ax, ay, asize, acol);
@@ -30,14 +30,15 @@ public class PrSquare extends PrObj implements PrShowable, PrHilightable, PrCapt
 	   pr.rect(x, y, size, size);  // draw a square
        showCaption();
 	}
-
 	
-	/*
 	public void mouseLClick() {
 		shiftHue();
 	}
-	public void mouseRClick() { }
-    */
+	
+	public void mouseRClick() { 
+		pr.destroy(this);
+	}
+    
 	public void setCaption(String s) {
 		caption=s;
 	}
