@@ -1,17 +1,14 @@
 import processing.core.*;
-//import java.util.Random;
+import java.util.ArrayList;
 
 public class PrApp extends PApplet {
 	// references to PrObj object(s) should be declared here
 	// any other custom "global" variables can be added here
-	// PrSquare[] squares;
-	// PrCircle[] circles;
-	PrObj[] objects;
-	final static int MAX_OBJS = 20;
+	ArrayList<PrObj> objects;  
 	int oSize;
 	int numCircles;
 	int numSquares;
-
+	ArrayList<PrObj> destroyed; //hold objects to be destroyed between frames
 	public static void main(String[] args) {
 		PApplet.main("PrApp");
 	}
@@ -23,7 +20,8 @@ public class PrApp extends PApplet {
 		oSize = 100; // set the size of objects when created
 		// squares=new PrSquare[10];
 		// circles=new PrCircle[10];
-		objects = new PrObj[MAX_OBJS];
+		objects = new ArrayList<PrObj>();
+		destroyed = new ArrayList<PrObj>();
 	}
 
 	public void setup() {
@@ -44,11 +42,9 @@ public class PrApp extends PApplet {
 	// mouseClicked() is an event-triggered method which is called once
 	// when a mouse button is pressed and released 
 	public void mouseClicked() {
-		for (int i = 0; i < objects.length; i++) {
-			if (objects[i] == null)
-				continue;
-			if (objects[i] instanceof PrClickable) {
-				PrClickable obj = (PrClickable)objects[i];
+		for (int i = 0; i < objects.size(); i++) {
+			if (objects.get(i) instanceof PrClickable) {
+				PrClickable obj = (PrClickable)objects.get(i);
 				if (obj.contains(mouseX, mouseY)) {
 					if (mouseButton == LEFT)
 						obj.mouseLClick();
@@ -86,62 +82,38 @@ public class PrApp extends PApplet {
 	}
 
 	void destroyObjects() {
-		objects = new PrObj[MAX_OBJS];
+		objects.clear();
 		numSquares=0;
 		numCircles=0;
 	}
 
 	void destroy(PrObj t) {
-		for (int i=0;i<objects.length;i++) {
-			if (objects[i]==t) {
-				objects[i]=null;
-				break;
-			}
-		}
+		destroyed.add(t); //simply add it to the list, postpone actual destruction
 	}
 	
-	int findNullEntry() {
-		int spot = -1;
-		for (int i = 0; i < objects.length; i++) {
-			if (objects[i] == null) {
-				spot = i;
-				break;
-			}
-		}
-		return spot;
-	}
-
 	void createSquare(float x, float y) {
-		int i = findNullEntry();
-		if (i >= 0) {
-			numSquares++;
-			PrSquare obj = new PrSquare(this, x - oSize / 2, y - oSize / 2, oSize,
-					color((float) (Math.random() * 100.0), (float) 80, (float) 80));
-			obj.setCaption("Square_"+numSquares);
-			objects[i]=obj;
-		}
+		numSquares++;
+		objects.add(new PrSquare(this, x - oSize / 2, y - oSize / 2, oSize,
+				color((float) (Math.random() * 100.0), (float) 80, (float) 80)) );
+		((PrObjCaptioned)objects.get(objects.size()-1)).setCaption("Square_"+numSquares);
 	}
 
 	void createCircle(float x, float y) {
-		int i = findNullEntry();
-		if (i >= 0) {
-			numCircles++;
-			PrCircle obj = new PrCircle(this, x - oSize / 2, y - oSize / 2, oSize,
-					color((float) (Math.random() * 100.0), 80, 80));
-			obj.setCaption("Circle_"+numCircles);
-			objects[i]=obj;
-		}
+		numCircles++;
+		objects.add(new PrCircle(this, x - oSize / 2, y - oSize / 2, oSize,
+				color((float) (Math.random() * 100.0), 80, 80)) );
+		((PrObjCaptioned)objects.get(objects.size()-1)).setCaption("Circle_"+numCircles);
 	}
 
 	public void showObjects() { // simply call the show() method of *all* drawable objects
-		for (int i = 0; i < objects.length; i++) {
-			PrObj obj = objects[i];
-			if (obj == null)
-				continue;
-			obj.show();
-			//if (obj instanceof PrShowable)
-			//	((PrShowable) obj).show();
+		//first, clean up any objects destroyed meanwhile
+		if (destroyed.size()>0) {
+		   destroyed.forEach( obj -> objects.remove(obj) );
+		   destroyed.clear();
 		}
+		objects.forEach( obj -> {
+			obj.show();
+		} );
 	}
 
 }

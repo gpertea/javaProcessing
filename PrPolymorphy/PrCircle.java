@@ -1,5 +1,5 @@
 
-public class PrCircle extends PrObjCaptioned implements PrHilightable, PrClickable, PrCaptionable {
+public class PrCircle extends PrObjCaptioned implements PrHilightable, PrClickable {
 
 	PrCircle(PrApp parent, float ax, float ay, float asize, int acol) {
 		super(parent, ax, ay, asize, acol);

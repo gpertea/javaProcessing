@@ -1,5 +1,5 @@
 
-public class PrSquare extends PrObjCaptioned implements PrHilightable, PrClickable, PrCaptionable {
+public class PrSquare extends PrObjCaptioned implements PrHilightable, PrClickable {
 
 	PrSquare(PrApp parent, float ax, float ay, float asize, int acol) {
 		super(parent, ax, ay, asize, acol);
