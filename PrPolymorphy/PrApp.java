@@ -8,7 +8,7 @@ public class PrApp extends PApplet {
 	int oSize;
 	int numCircles;
 	int numSquares;
-	ArrayList<PrObj> destroyed; //hold objects to be destroyed between frames
+	ArrayList<PrObj> toBeDestroyed; //hold objects to be destroyed
 	public static void main(String[] args) {
 		PApplet.main("PrApp");
 	}
@@ -21,7 +21,7 @@ public class PrApp extends PApplet {
 		// squares=new PrSquare[10];
 		// circles=new PrCircle[10];
 		objects = new ArrayList<PrObj>();
-		destroyed = new ArrayList<PrObj>();
+		toBeDestroyed = new ArrayList<PrObj>();
 	}
 
 	public void setup() {
@@ -88,7 +88,7 @@ public class PrApp extends PApplet {
 	}
 
 	void destroy(PrObj t) {
-		destroyed.add(t); //simply add it to the list, postpone actual destruction
+		toBeDestroyed.add(t); //simply add it to the list, postpone actual removal
 	}
 	
 	void createSquare(float x, float y) {
@@ -107,13 +107,16 @@ public class PrApp extends PApplet {
 
 	public void showObjects() { // simply call the show() method of *all* drawable objects
 		//first, clean up any objects destroyed meanwhile
-		if (destroyed.size()>0) {
-		   destroyed.forEach( obj -> objects.remove(obj) );
-		   destroyed.clear();
-		}
-		objects.forEach( obj -> {
+		if (toBeDestroyed.size()>0) {
+		   /*for (PrObj t : toBeDestroyed)
+			   objects.remove(t);
+		   toBeDestroyed.clear();*/
+			PrObj t=toBeDestroyed.get(0);
+			toBeDestroyed.remove(0);
+			objects.remove(t);
+	    }
+		for (PrObj obj : objects) 
 			obj.show();
-		} );
 	}
 
 }
