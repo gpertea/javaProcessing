@@ -4,7 +4,7 @@ public class MergeSort {
 	
     public static int bsearch(ArrayList<Comparable> data, Comparable findMe, int start, int end) throws NullPointerException {
          if (start >= end) {
-             return data.get(end).compareTo(findMe)==0 ? end : -1;
+        	 return -1;
          }
          int midpt;
          midpt = (start + end)/2;
@@ -12,7 +12,7 @@ public class MergeSort {
          if (compareTest == 0)
              return midpt;
          if (compareTest > 0)
-             return bsearch(data, findMe, start, midpt-1);
+             return bsearch(data, findMe, start, midpt);
          // compareTest < 0
          return bsearch(data, findMe, midpt+1, end);
     }
@@ -79,20 +79,31 @@ public class MergeSort {
 
    public static void searchReport(ArrayList<Comparable> data, Comparable toFind, int idx) {
 	   if (idx<0)
-		   System.out.println("Query "+toFind+ " NOT found!");
+		   System.out.println("Query '"+toFind+ "' NOT found!");
 	   else
-		   System.out.println("Query "+toFind+ " found at index "+idx + " ("+data.get(idx)+")");
+		   System.out.println("Query '"+toFind+ "' found at index "+idx + " ("+data.get(idx)+")");
    }
     
    public static void main(String[] args) {
-        Random rnd = new Random(2019);
+        //Random rnd = new Random(2019);
         ArrayList<Comparable> myList = new ArrayList<Comparable>();
         long startTime = 0;
         long endTime = 0;
 
-        for (int i = 0; i < 50; i++) {
-             myList.add(rnd.nextInt(100));
-        }
+        //for (int i = 0; i < 50; i++) {
+        //     myList.add(rnd.nextInt(100));
+        //}
+		myList.add(new Student("Anne", "Jolie", 'B'));
+		myList.add(new Student("Darth", "Vader", 'F'));
+		myList.add(new Student("Anne", "Frank", 'A'));
+		myList.add(new Student("Zoe", "Saldana", 'B'));
+		myList.add(new Student("Tom", "Cruise", 'D'));
+		myList.add(new Student("Tom", "Hanks", 'A'));
+		myList.add(new Student("Colin", "Hanks", 'A'));
+		myList.add(new Student("Bobby", "Brown", 'C'));
+		myList.add(new Student("Krusty", "Krab", 'E'));
+		myList.add(new Student("Donald", "Trump", 'G'));
+
         System.out.println("Initial: " +myList);
 
         try {
@@ -102,13 +113,18 @@ public class MergeSort {
         } catch (NullPointerException e) {
              e.printStackTrace();
         }
-        System.out.println(" Sorted: "+ myList);
-        System.out.println("The merge sort took " + (int)((endTime - startTime)/1000) + " milliseconds to complete.");
-        for (int q=36;q<=46;q+=2) {
-            Integer toFind=new Integer(q);
+		System.out.println(" Sorted: "+myList);
+        //System.out.println("The merge sort took " + (int)((endTime - startTime)/1000) + " milliseconds to complete.");
+        ArrayList<Student> queries=new ArrayList<Student>();
+        queries.add(new Student("Anne", "Jolie"));
+        queries.add(new Student("Tom", "Cruise"));
+        queries.add(new Student("Bob", "Hanks"));
+        queries.add(new Student("Tom", "Hanks"));
+        for (Student toFind: queries) {
             int foundIdx=bsearch(myList, toFind);
             searchReport(myList, toFind, foundIdx);
         }
+        
    }
 	
 }

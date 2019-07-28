@@ -45,9 +45,11 @@ public class SelectionSort {
 		ArrayList students=new ArrayList();
 		students.add(new Student("Darth", "Vader", 'F'));
 		students.add(new Student("Anne", "Frank", 'A'));
+		students.add(new Student("Anne", "Jolie", 'B'));
 		students.add(new Student("Zoe", "Saldana", 'B'));
 		students.add(new Student("Tom", "Cruise", 'D'));
 		students.add(new Student("Tom", "Hanks", 'A'));
+		students.add(new Student("Colin", "Hanks", 'A'));
 		students.add(new Student("Bobby", "Brown", 'C'));
 		students.add(new Student("Krusty", "Krab", 'E'));
 		students.add(new Student("Donald", "Trump", 'G'));

@@ -44,12 +44,10 @@ public class Practice {
         	  //System.out.println(" ### start>=end, comparison of "+data.get(end)+" vs "+findMe+" result is "+v); 
         	  //if (v == 0)
               //    return end;
-              return data.get(end).compareTo(findMe)==0 ? end : -1;
+              //return data.get(end).compareTo(findMe)==0 ? end : -1;
+        	  return -1;
           }
-          int midpt;
-          /*** TODO: Calculate the midpoint between start and end and store in midpt (NOTE: 
-                     Don't forget to account for where you started in your calculation) ***/
-          midpt = (start + end)/2;
+          int midpt = (start + end)/2;
           /***TODO: Write a selection statement with the following conditions and outcome
                       If the element referenced by midpt is findMe, return midpt
                       If the element referenced by midpt is greater than findMe, return
@@ -61,11 +59,9 @@ public class Practice {
           if (data.get(midpt).compareTo(findMe) == 0)
               return midpt;
           if (data.get(midpt).compareTo(findMe) > 0)
-              return binary(data, findMe, start, midpt-1);
-          if (data.get(midpt).compareTo(findMe) < 0)
-              return binary(data, findMe, midpt+1, end);
-          
-            return 0;
+              return binary(data, findMe, start, midpt);
+          //if (data.get(midpt).compareTo(findMe) < 0)
+           return binary(data, findMe, midpt+1, end);
      }
 
      public static void main(String[] args) {
@@ -85,7 +81,7 @@ public class Practice {
 
           try {
                startTime = System.nanoTime();
-               index = binary(myList,new Integer(42),0,myList.size()-1);
+               index = binary(myList,new Integer(36),0,myList.size()-1);
                endTime = System.nanoTime();
           } catch (NullPointerException e) {
                e.printStackTrace();
