@@ -79,21 +79,22 @@ public class Sorting {
    }
 
     public static void swap(ArrayList<Comparable> data, int i, int j) {
+    	if (i==j) return;
     	Comparable temp=data.get(i);
     	data.set(i, data.get(j));
     	data.set(j, temp);
     }
     
 
-    public static void quickSort(ArrayList<Comparable> data) {
-    	quickSort(data, 0, data.size()-1);
+    public static void quickSort2(ArrayList<Comparable> data) {
+    	quickSort2(data, 0, data.size()-1);
     }
     
-    public static void quickSort(ArrayList<Comparable> data, int lowerIndex, int higherIndex) {
-        int i = lowerIndex;
-        int j = higherIndex;
+    public static void quickSort2(ArrayList<Comparable> arr, int start, int end) {
+        int i = start;
+        int j = end;
         // calculate pivot number, I am taking pivot as middle index number
-        Comparable pivot = data.get((lowerIndex+higherIndex)/2);
+        Comparable pivot = arr.get((start+end)/2);
         // Partition into two arrays
         while (i <= j) {
             /**
@@ -102,47 +103,29 @@ public class Sorting {
              * from right side which is less then the pivot value. Once the search 
              * is done, then we exchange both numbers.
              */
-            while (data.get(i).compareTo(pivot) < 0) {
+            while (arr.get(i).compareTo(pivot) < 0) {
                 i++;
             }
-            while (data.get(j).compareTo(pivot) > 0) {
+            while (arr.get(j).compareTo(pivot) > 0) {
                 j--;
             }
             if (i <= j) {
-                swap(data, i, j);
+                swap(arr, i, j);
                 //move index to next position on both sides
                 i++;
                 j--;
             }
         }
         // call quickSort() method recursively as needed
-        if (lowerIndex < j)
-            quickSort(data, lowerIndex, j);
-        if (i < higherIndex)
-            quickSort(data, i, higherIndex);
+        if (start < j)
+            quickSort2(arr, start, j);
+        if (i < end)
+            quickSort2(arr, i, end);
     }
 
-    public static void quickSort2(ArrayList<Comparable> data) {
-    	quickSort2(data, 0, data.size()-1);
-    }
-    
-    
-    public static int partition(ArrayList<Comparable> arr, int start, int end) {
-        Comparable pivot = arr.get(end);
-        for(int i=start; i<end; i++){
-            if(arr.get(i).compareTo(pivot)<0) {
-            	swap(arr, start, i);
-                start++;
-            }
-        }
-        Comparable temp = arr.get(start);
-        arr.set(start, pivot);
-        arr.set(end, temp);
-        return start;
-    }
-    
-    public static void quickSort2(ArrayList<Comparable> data, int start, int end) {
-        int pivotIdx = partition(data, start, end);
+    public static void quickSort(ArrayList<Comparable> data, int start, int end) {
+    	if (start>=end) return;
+        int pivotIdx = partitionFirstCheat(data, start, end);
         if(pivotIdx-1>start) {
             quickSort(data, start, pivotIdx - 1);
         }
@@ -150,12 +133,58 @@ public class Sorting {
             quickSort(data, pivotIdx + 1, end);
         }
     }
+
+    public static void quickSort(ArrayList<Comparable> data) {
+    	quickSort(data, 0, data.size()-1);
+    }
    
-   public static void quickSort3(ArrayList<Comparable> arr) {
+
+    public static int partitionFirst(ArrayList<Comparable> arr, int start, int end) {
+        Comparable pivot = arr.get(start);
+        int x=start;
+        for(int i=start+1; i<=end; i++){
+            if(arr.get(i).compareTo(pivot)<0) {
+                x++; //keep track of last swap location
+            	swap(arr, x, i);
+            }
+        }
+        swap(arr, x, start);
+        return x;
+    }
+
+    public static int partitionLast(ArrayList<Comparable> arr, int start, int end) {
+        Comparable pivot = arr.get(end);
+        int x=start;
+        for(int i=start; i<end; i++){
+            if(arr.get(i).compareTo(pivot)<0) {
+            	swap(arr, x, i);
+                x++; //keep track of last swap location
+            }
+        }
+        swap(arr, x, end);
+        return x;
+    }
+
+    public static int partitionFirstCheat(ArrayList<Comparable> arr, int start, int end) {
+        Comparable pivot = arr.get(start);
+        swap(arr, start, end);
+        int x=start;
+        for(int i=start; i<end; i++){
+            if(arr.get(i).compareTo(pivot)<0) {
+            	swap(arr, x, i);
+                x++; //keep track of last swap location
+            }
+        }
+        swap(arr, x, end);
+        return x;
+    }
+
+    
+    public static void quickSort3(ArrayList<Comparable> arr) {
 	   quickSort3(arr, 0, arr.size()-1);
-   }
+    }
    
-   public static void quickSort3(ArrayList<Comparable> arr, int l, int r) {
+    public static void quickSort3(ArrayList<Comparable> arr, int l, int r) {
 	   int i, j;
 	   do {
 	      i = l; j = r;
@@ -189,8 +218,11 @@ public class Sorting {
         for (int i = 0; i < 250; i++) {
              myList.add(rnd.nextInt(100));
         }
+        //myList.clear();
+        //myList = new ArrayList<Comparable>(Arrays.asList(2,12,1,4,3,-1,7));
         ArrayList<Comparable> myList2 = new ArrayList<Comparable>(myList);
-        ArrayList<Comparable> myList3 = new ArrayList<Comparable>(myList);
+        //ArrayList<Comparable> myList3 = new ArrayList<Comparable>(myList);
+        //ArrayList<Comparable> myList4 = new ArrayList<Comparable>(myList);
         /*
 		myList.add(new Student("Anne", "Jolie", 'B'));
 		myList.add(new Student("Darth", "Vader", 'F'));
@@ -203,18 +235,23 @@ public class Sorting {
 		myList.add(new Student("Krusty", "Krab", 'E'));
 		myList.add(new Student("Donald", "Trump", 'G'));
         */
-        System.out.println("Initial: " +myList);
+        System.out.println("Initial: " +myList2);
 
-        try {
-            startTime = System.nanoTime();
-             //mergeSort(myList);
-             quickSort(myList);
-             endTime = System.nanoTime();
-        } catch (NullPointerException e) {
-             e.printStackTrace();
-        }
-		System.out.println("QSorted1: "+myList);
-        System.out.println("Quick sort 1 took " + (int)((endTime - startTime)/1000) + " milliseconds to complete.");
+        startTime = System.nanoTime();
+        mergeSort(myList);
+        endTime = System.nanoTime();
+        System.out.println("  Merge sort took " + (int)((endTime - startTime)/1000) + " milliseconds to complete.");
+        startTime = System.nanoTime();
+        quickSort(myList2);
+        endTime = System.nanoTime();
+        System.out.println("  Quick sort took " + (int)((endTime - startTime)/1000) + " milliseconds to complete.");
+        
+		if (!myList.equals(myList2)) {
+			  System.out.println("Error: sorted myList2 not equal to myList !!!");
+			  System.exit(2);
+	    }
+
+        /*
         startTime = System.nanoTime();
 		quickSort2(myList2);
         endTime = System.nanoTime();
@@ -235,7 +272,7 @@ public class Sorting {
 		  System.exit(2);
 		}
         System.out.println("Quick sort 3 took " + (int)((endTime - startTime)/1000) + " milliseconds to complete.");
-
+        */
         /*
         ArrayList<Student> queries=new ArrayList<Student>();
         queries.add(new Student("Anne", "Jolie"));
@@ -243,11 +280,13 @@ public class Sorting {
         queries.add(new Student("Bob", "Hanks"));
         queries.add(new Student("Tom", "Hanks"));
         */
+        /*
         for (int q=36;q<=46;q+=2) {
             Integer toFind=new Integer(q);
             int foundIdx=bsearch(myList2, toFind);
             searchReport(myList2, toFind, foundIdx);
-       }
+        }
+        */
 
    }
 	
