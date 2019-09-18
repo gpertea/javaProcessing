@@ -1,24 +1,35 @@
 import java.io.File;
 import java.util.Stack;
-
-class DirNode {
-  boolean visited;
-  File dir;
-  public DirNode(File d) {
-	   dir = d;
-	   visited = false;
-  }
-}
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class DirTree {
 	static Stack<String> path;
 	public static void printIndented(File f) {
 		String s=f.getParentFile().getPath();
-    	System.out.print(String.format("%0" + (s.length()-2) + "d", 0).replace("0", " "));
-		System.out.println("+--" + f.getName());
+    	System.out.print(String.format("% " + (s.length()-2) + "d", 0).substring(0,s.length()-3));
+    	if (f.isDirectory())
+		    System.out.println("+--[" + f.getName()+"] <- "+path.toString().replace(", ", "/"));
+    	else System.out.println("+--" + f.getName());
 	}
 	
-	public static void listFilesForFolder(File folder) {
+	
+	public static void listRecursive(File folder) {
+		if (!folder.isDirectory()) {
+            System.out.println("ERROR: '"+ folder.getName()+ "' is not a folder!");
+            System.exit(1);
+		}
+		path.push(folder.getName());
+		printIndented(folder);
+		for (File entry : folder.listFiles()) {
+	        if (entry.isDirectory()) 
+	        	listRecursive(entry); //descend into the sub-directory
+	        else printIndented(entry); //a file, just print it
+		}
+		path.pop();
+	}
+	
+	public static void listDirTree(File folder) {
 		if (!folder.isDirectory()) {
             System.out.println("ERROR: '"+ folder.getName()+ "' not a folder!");
             System.exit(1);
@@ -30,18 +41,26 @@ public class DirTree {
 			printIndented(folder);
 			path.push(folder.getName());
 		}
-		Stack<File> rstack=new Stack<File>();
+		//we want to show folders first, always
+		Queue<File> dq=new LinkedList<>(); //folder queue
+		Queue<File> fq=new LinkedList<>(); //files queue
 	    for (File entry : folder.listFiles()) {
 	        if (entry.isDirectory()) {
-	        	rstack.push(entry);
+	        	dq.add(entry);
 	        } else {
-	        	printIndented(entry);
+	        	//printIndented(entry);
+	        	fq.add(entry);
 	        }
 	    }
-        while (!rstack.isEmpty()) {
-        	File subd=rstack.pop();
-        	listFilesForFolder(subd);
+        while (!dq.isEmpty()) {
+        	File dir=dq.remove();
+        	listDirTree(dir);
         }
+        while (!fq.isEmpty()) {
+        	File f=fq.remove();
+        	printIndented(f);
+        }
+        //keep track of the directory branch we're on
 	    path.pop();
 	}
 
@@ -69,13 +88,15 @@ public class DirTree {
 	
 	public static void main(String[] args) {
 		path=new Stack<String>();
-		File startDir=new File("d:/temp");
+		File startDir=new File("d:/dirtree");
 		System.out.println(">"+startDir.getPath());
-        listFilesForFolder(startDir);
+        listRecursive(startDir);
+        /*
         System.out.println("-------------------------------------");
 		System.out.println(">"+startDir.getPath());
         path.clear();
-        treeTraversal(new File("d:/temp"));        
+        treeTraversal(new File("d:/dirtree"));
+        */        
 	}
 
 }
