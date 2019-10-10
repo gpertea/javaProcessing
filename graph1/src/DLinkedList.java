@@ -5,7 +5,7 @@ public class DLinkedList<T> {
 	  private Node<T> tail = null;
 
 	  // Internal node class to represent data
-	  private class Node<D> {
+	  class Node<D> {
 	    D data;
 	    Node<D> prev, next;
 
@@ -38,6 +38,13 @@ public class DLinkedList<T> {
 	  public int size() {
 	    return size;
 	  }
+      public Node<T> head() {
+    	  return head;
+      }
+
+      public Node<T> tail() {
+    	  return tail;
+      }
 
 	  // Is this linked list empty?
 	  public boolean isEmpty() {
