@@ -149,15 +149,32 @@ public class Graph<T> {
 		v.visited=true;
 	}
 	
-	public void rtraverseDFS(Vertex<T> v) {
+	public void rtraverseDFS(Vertex<T> v, Stack<Vertex<T>> path) {
 		if (v==null) return;
+		path.push(v);
 		processVertex(v);
+		boolean noExit=true;
 		for (Edge e : v.adjList) {
 			if (!e.to.visited) {
-				rtraverseDFS(e.to);
+				noExit=false;
+				rtraverseDFS(e.to, path);
+				path.pop();
 			}
-		}
+		} //for each neighbor
+		if (noExit) System.out.println("\t Path: "+path);
+		
 	}
+	
+	public void rtraverseDFS(T vdata) {
+		int vi = getVertexIndex(vdata);
+		if (vi<0) {
+			System.out.println("Error: vertex ["+vdata+"] not found!");
+			System.exit(1);
+		}
+		
+		rtraverseDFS(vertices.get(vi), new Stack<Vertex<T>>() );
+	}
+
 	
 	
 	DLinkedList<Vertex<T>> recoverPath(Vertex<T> src, Vertex<T> dest, HashMap<Vertex<T>, Vertex<T>> pred) {
@@ -180,6 +197,7 @@ public class Graph<T> {
 		//process (visit) nodes as they are pushed onto the stack
 		HashMap<Vertex<T>, Vertex<T>> pred=new HashMap<Vertex<T>, Vertex<T>>();
 		Stack<Vertex<T>> vstack=new Stack<>();
+		Vertex<T> lastUnvisited=v;
 		vstack.push(v);
 		processVertex(v); // "visit" the source node
 		while (!vstack.isEmpty()) {
@@ -197,13 +215,16 @@ public class Graph<T> {
 			if (nextUnvisited!=null) {
 				vstack.push(nextUnvisited);
 				pred.put(nextUnvisited, top);
+				lastUnvisited=nextUnvisited;
 				processVertex(nextUnvisited);
 				System.out.println("\tpushed "+nextUnvisited+ " onto stack which is now: "+vstack);
 			} else { //end of traversal here
+				if (top==lastUnvisited)
+				    System.out.println("\t----- traversal path: "+vstack);
 				vstack.pop();
 				System.out.println("\tpopped the stack which is now: "+vstack);
 				//end of a path, print current path stack!
-				if (!vstack.isEmpty()) {
+				if (!vstack.isEmpty() && top==lastUnvisited) {
 					DLinkedList<Vertex<T>> path=recoverPath(v, top, pred);
 					System.out.println("\t>>> Path: "+path);
 				}
@@ -220,13 +241,5 @@ public class Graph<T> {
 		traverseDFS(vertices.get(vi));
 	}
 	
-	public void rtraverseDFS(T vdata) {
-		int vi = getVertexIndex(vdata);
-		if (vi<0) {
-			System.out.println("Error: vertex ["+vdata+"] not found!");
-			System.exit(1);
-		}
-		rtraverseDFS(vertices.get(vi));
-	}
 
 }
