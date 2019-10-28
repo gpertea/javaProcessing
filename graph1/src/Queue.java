@@ -5,7 +5,7 @@ public class Queue<T> {
 	  public Queue() {}
 
 	  public Queue(T firstElem) {
-	    offer(firstElem);
+	    enqueue(firstElem);
 	  }
 
 	  // Return the size of the queue
@@ -27,13 +27,13 @@ public class Queue<T> {
 
 	  // Poll an element from the front of the queue
 	  // The method throws an error is the queue is empty
-	  public T poll() {
+	  public T dequeue() {
 	    if (isEmpty()) throw new RuntimeException("Queue Empty");
 	    return list.removeFirst();
 	  }
 
 	  // Add an element to the back of the queue
-	  public void offer(T elem) {
+	  public void enqueue(T elem) {
 	    list.addLast(elem);
 	  }
 
