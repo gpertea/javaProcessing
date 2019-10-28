@@ -170,40 +170,44 @@ public class Graph<T> {
 		}
 		if (v==src) path.addFirst(v);
 		else {
-			System.out.println("Error: recoverPath failed for dest="+dest);
+			System.out.println("Error: recoverPath failed for dest="+dest+ " and src="+src);
 			System.exit(1);
 		}
 		return path;
 	}
 	
 	public void traverseDFS(Vertex<T> v) {
+		//process (visit) nodes as they are pushed onto the stack
 		HashMap<Vertex<T>, Vertex<T>> pred=new HashMap<Vertex<T>, Vertex<T>>();
 		Stack<Vertex<T>> vstack=new Stack<>();
 		vstack.push(v);
+		processVertex(v); // "visit" the source node
 		while (!vstack.isEmpty()) {
-			System.out.println("\tpop and visit top of stack: "+vstack);
-			Vertex<T> top=vstack.pop();
-			if (!top.visited) {
-				processVertex(top);
-				//path.push(top);
-				int nump=0;
-				//! adjList should be processed in reverse direction to fully emulate the recursive DFS!
-				for (int i=top.adjList.size()-1; i>=0; i--) {
-					Vertex<T> vto=top.adjList.get(i).to;
-					if (!vto.visited) {
-						System.out.println("\tpushing "+vto+ " onto stack: "+vstack);
-						nump++;
-						vstack.push(vto);
-						pred.put(vto, top);
-					} //if connected vertex not visited
-				} //for each connected vertex
-				if (nump==0) {
-					//end of a path, print current path stack!
-					DLinkedList<Vertex<T>> path=recoverPath(v, top, pred);
-					System.out.println(">>> Path: "+path);
-					//path.pop();
+			Vertex<T> top=vstack.peek();
+			System.out.println("\tpeek at the top of stack: "+vstack);
+			Vertex<T> nextUnvisited=null;
+			// find the first unvisited neighbor of top 
+			for (int i=0;i<top.adjList.size(); i++) {
+				Vertex<T> vto=top.adjList.get(i).to;
+				if (!vto.visited) {
+					nextUnvisited=vto;
+					break; //unvisited neighbor found!
 				}
-			} //top of stack not visited
+			}
+			if (nextUnvisited!=null) {
+				vstack.push(nextUnvisited);
+				pred.put(nextUnvisited, top);
+				processVertex(nextUnvisited);
+				System.out.println("\tpushed "+nextUnvisited+ " onto stack which is now: "+vstack);
+			} else { //end of traversal here
+				vstack.pop();
+				System.out.println("\tpopped the stack which is now: "+vstack);
+				//end of a path, print current path stack!
+				if (!vstack.isEmpty()) {
+					DLinkedList<Vertex<T>> path=recoverPath(v, top, pred);
+					System.out.println("\t>>> Path: "+path);
+				}
+			}
 		}
 	}
 	
