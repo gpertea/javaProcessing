@@ -155,7 +155,7 @@ public class Graph<T> {
 		if (v==null) return;
 		path.push(v);
 		visitVertex(v);
-		System.out.println("    path to this vertex:"+path);
+		//System.out.println("    path to this vertex:"+path);
 		boolean pathEnd=true;
 		for (Edge e : v.adjList) {
 			if (!e.to.visited) {
