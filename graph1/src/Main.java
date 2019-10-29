@@ -14,10 +14,10 @@ public class Main {
 		graph.addUndirectedEdge("V1", "V2");
 		graph.addUndirectedEdge("V2", "V4");
 		//System.out.println(graph);
-		graph.traverseDFS("V0");
+		//graph.traverseDFS("V0");
 		System.out.println("Recursive DFS:");
 		graph.resetVisited();
-		graph.rtraverseDFS("V0");
+		graph.recursiveDFS("V0");
 	}
 
 }

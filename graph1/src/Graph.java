@@ -46,6 +46,8 @@ public class Graph<T> {
 
 	ArrayList<Vertex<T>> vertices;
     boolean isWeighted;
+    Stack<Vertex<T>> path = new Stack<Vertex<T>>();
+    
 	Graph(){
 		vertices = new ArrayList<Vertex<T>>();
 	}
@@ -144,35 +146,35 @@ public class Graph<T> {
 	}
 	
 	
-	public void processVertex(Vertex<T> v) {
+	public void visitVertex(Vertex<T> v) {
 		System.out.println("Visiting ["+v.data+"]");
 		v.visited=true;
 	}
 	
-	public void rtraverseDFS(Vertex<T> v, Stack<Vertex<T>> path) {
+	public void recursiveDFS(Vertex<T> v) {
 		if (v==null) return;
 		path.push(v);
-		processVertex(v);
-		boolean noExit=true;
+		visitVertex(v);
+		System.out.println("    path to this vertex:"+path);
+		boolean pathEnd=true;
 		for (Edge e : v.adjList) {
 			if (!e.to.visited) {
-				noExit=false;
-				rtraverseDFS(e.to, path);
-				path.pop();
+				pathEnd=false;
+				recursiveDFS(e.to);
 			}
 		} //for each neighbor
-		if (noExit) System.out.println("\t Path: "+path);
-		
+		if (pathEnd) System.out.println("\t Path: "+path);
+		path.pop();
 	}
 	
-	public void rtraverseDFS(T vdata) {
+	public void recursiveDFS(T vdata) {
 		int vi = getVertexIndex(vdata);
 		if (vi<0) {
 			System.out.println("Error: vertex ["+vdata+"] not found!");
 			System.exit(1);
 		}
 		
-		rtraverseDFS(vertices.get(vi), new Stack<Vertex<T>>() );
+		recursiveDFS(vertices.get(vi));
 	}
 
 	
@@ -199,7 +201,7 @@ public class Graph<T> {
 		Stack<Vertex<T>> vstack=new Stack<>();
 		Vertex<T> lastUnvisited=v;
 		vstack.push(v);
-		processVertex(v); // "visit" the source node
+		visitVertex(v); // "visit" the source node
 		while (!vstack.isEmpty()) {
 			Vertex<T> top=vstack.peek();
 			System.out.println("\tpeek at the top of stack: "+vstack);
@@ -216,7 +218,7 @@ public class Graph<T> {
 				vstack.push(nextUnvisited);
 				pred.put(nextUnvisited, top);
 				lastUnvisited=nextUnvisited;
-				processVertex(nextUnvisited);
+				visitVertex(nextUnvisited);
 				System.out.println("\tpushed "+nextUnvisited+ " onto stack which is now: "+vstack);
 			} else { //end of traversal here
 				if (top==lastUnvisited)
